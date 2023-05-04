@@ -1,0 +1,12 @@
+configmap:
+  enabled: true
+  name: aws-auth
+data:
+  mapAccounts: |
+    - "755521597925"
+  mapRoles: |
+    - "groups":
+      - "system:bootstrappers"
+      - "system:nodes"
+      "rolearn": "arn:aws:iam::755521597925:role/test-eksworker"
+      "username": "system:node:{{EC2PrivateDNSName}}" 
