@@ -16,9 +16,28 @@ runs:
     - name: 'Checkout if required'
       if: ${{ inputs.checkout == 'true' }}
       uses: actions/checkout@v3
-    
-    - name: 'Install terraform CLI'
+
+
+    - name: Install Terraform
       uses: hashicorp/setup-terraform@v2
       with:
         terraform_version: 1.1.7
 
+    - name: Terraform Init
+      id: init
+      working-directory: terraform
+      run: terraform init
+
+    - name: Terraform Validate
+      id: validate
+      working-directory: terraform
+      run: terraform validate -no-color  
+          
+    - name: Terraform Plan
+      id: plan
+      working-directory: terraform
+      run: terraform plan -no-color     
+
+    - run: echo ${{ steps.plan.outputs.stdout }}
+    - run: echo ${{ steps.plan.outputs.stderr }}
+    - run: echo ${{ steps.plan.outputs.exitcode }}
