@@ -17,23 +17,26 @@ runs:
       if: ${{ inputs.checkout == 'true' }}
       uses: actions/checkout@v3
 
-
     - name: Install Terraform
+      shell: bash
       uses: hashicorp/setup-terraform@v2
       with:
         terraform_version: 1.1.7
 
     - name: Terraform Init
+      shell: bash
       id: init
       working-directory: terraform
       run: terraform init
 
     - name: Terraform Validate
+      shell: bash
       id: validate
       working-directory: terraform
       run: terraform validate -no-color  
           
     - name: Terraform Plan
+      shell: bash
       id: plan
       working-directory: terraform
       run: terraform plan -no-color     
