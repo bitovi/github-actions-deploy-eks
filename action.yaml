@@ -15,5 +15,5 @@ runs:
   steps:
     - name: 'Checkout if required'
       if: ${{ inputs.checkout == 'true' }}
-      uses: actions/checkout@deploy-eks
+      uses: actions/checkout@v3
 
