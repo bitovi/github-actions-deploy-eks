@@ -18,7 +18,6 @@ runs:
       uses: actions/checkout@v3
 
     - name: Install Terraform
-      shell: bash
       uses: hashicorp/setup-terraform@v2
       with:
         terraform_version: 1.1.7
@@ -41,6 +40,6 @@ runs:
       working-directory: terraform
       run: terraform plan -no-color     
 
-    - run: echo ${{ steps.plan.outputs.stdout }}
-    - run: echo ${{ steps.plan.outputs.stderr }}
-    - run: echo ${{ steps.plan.outputs.exitcode }}
+    # - run: echo ${{ steps.plan.outputs.stdout }}
+    # - run: echo ${{ steps.plan.outputs.stderr }}
+    # - run: echo ${{ steps.plan.outputs.exitcode }}
