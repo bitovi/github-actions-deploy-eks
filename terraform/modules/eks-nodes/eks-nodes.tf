@@ -21,18 +21,18 @@ resource "aws_autoscaling_group" "main" {
   name                 = var.asg_name
   vpc_zone_identifier  = var.vpc_zone_identifier #[aws_subnet.a.id, aws_subnet.b.id, aws_subnet.c.id]
 
-  tags = concat(
-    [{
-      key = "kubernetes.io/cluster/${var.cluster_name}"
-      value = "owned"
-      propagate_at_launch = true
-    }],
-    [for tag_key, tag_value in var.common_tags: {
-      "key"                 = tag_key
-      "value"               = tag_value
-      "propagate_at_launch" = true
-    }],
-  )
+tag {
+  key                 = "kubernetes.io/cluster/${var.cluster_name}"
+  value               = "owned"
+  propagate_at_launch = true
+}
+
+/* [tag for tag_key, tag_value in var.common_tags: {
+  key                 = tag_key
+  value               = tag_value
+  propagate_at_launch = true
+}] */
+
 
   depends_on = [
     var.eks_worker_depends_on

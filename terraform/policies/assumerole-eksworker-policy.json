@@ -16,8 +16,7 @@
                 "s3:PutObjectVersionAcl"
             ],
             "Resource": [
-                "arn:aws:s3:::bitovi-operations-recruiting-prod-us-west-2",
-                "arn:aws:s3:::bitovi-operations-recruiting-prod-us-west-2/*"
+                "*"
             ]
         },
         {
