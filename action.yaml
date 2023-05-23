@@ -92,6 +92,13 @@ runs:
         # Current repo vars
         gh_action_repo: ${{ github.action_path }}
 
+      #AWS
+
+        aws_access_key_id: ${{ inputs.aws_access_key_id }}
+        aws_secret_access_key: ${{ inputs.aws_secret_access_key }}
+        aws_session_token: ${{ inputs.aws_session_token }}
+        aws_default_region: ${{ inputs.aws_default_region }}  
+
       # AWS EKS
         aws_eks_create: ${{ inputs.aws_eks_create }}
         aws_eks_region: ${{ inputs.aws_eks_region }}
