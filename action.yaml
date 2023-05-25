@@ -31,6 +31,12 @@ inputs:
   aws_eks_region:
     description: 'Define the region where EKS cluster should be created'
     required: false
+  aws_eks_security_group_name_master:
+    description: 'Define the security group name master'
+    required: false
+  aws_eks_security_group_name_worker:
+    description: 'Define the security group name worker'
+    required: false  
   aws_eks_environment:
     description: 'Specify the eks environment name. ex: dev or test'
     required: false
@@ -52,6 +58,12 @@ inputs:
   aws_eks_public_subnets:
     description:  "List of public subnets (e.g. `['10.0.101.0/24', '10.0.102.0/24']`)"
     required: false 
+  aws_eks_cluster_name:
+    description: 'Specify the k8s cluster name'
+    required: false   
+  aws_eks_cluster_log_types:
+    description: 'Specify the k8s cluster log type'
+    required: false   
   aws_eks_cluster_version:
     description: 'Specify the k8s cluster version'
     required: false 
@@ -61,6 +73,9 @@ inputs:
   aws_eks_instance_type:
     description: 'enter the aws instance type'
     required: false 
+  aws_eks_user_data_file:
+    description: 'enter the eks user data file'
+    required: false   
   aws_eks_ec2_key_pair:
     description: 'Enter the existing ec2 key pair for worker nodes'
     required: true 
@@ -79,11 +94,6 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - name: Invert boolean Variable
-      shell: bash
-      id: set-cert
-      if: ${{ inputs.no_cert == 'false' }}
-      run: echo "enable_cert=true" >> $GITHUB_OUTPUT
 
     - name: Deploy with BitOps
       id: deploy
@@ -102,6 +112,8 @@ runs:
       # AWS EKS
         aws_eks_create: ${{ inputs.aws_eks_create }}
         aws_eks_region: ${{ inputs.aws_eks_region }}
+        aws_eks_security_group_name_master: ${{ inputs.aws_eks_security_group_name_master }}
+        aws_eks_security_group_name_worker" ${{ inputs.aws_eks_security_group_name_worker }}
         aws_eks_environment: ${{ inputs.aws_eks_environment }}
         aws_eks_stackname: ${{ inputs.aws_eks_stackname }}
         aws_eks_cidr_block: ${{ inputs.aws_eks_cidr_block }}
@@ -109,9 +121,12 @@ runs:
         aws_eks_availability_zones: ${{ inputs.aws_eks_availability_zones }}
         aws_eks_private_subnets: ${{ inputs.aws_eks_private_subnets }}
         aws_eks_public_subnets: ${{ inputs.aws_eks_public_subnets }}
+        aws_eks_cluster_name: ${{ inputs.aws_eks_cluster_name }}
+        aws_eks_cluster_log_types: ${{ inputs.aws_eks_cluster_log_types}}
         aws_eks_cluster_version: ${{ inputs.aws_eks_cluster_version }}
         aws_eks_image_id: ${{ inputs.aws_eks_image_id }}
         aws_eks_instance_type: ${{ inputs.aws_eks_instance_type }}
+        aws_eks_user_data_file: ${{ inputs.aws_eks_user_data_file}}
         aws_eks_ec2_key_pair: ${{ inputs.aws_eks_ec2_key_pair }}
         aws_eks_desired_capacity: ${{ inputs.aws_eks_desired_capacity}}
         aws_eks_max_size: ${{ inputs.aws_eks_max_size }}
