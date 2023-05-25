@@ -113,7 +113,7 @@ runs:
         aws_eks_create: ${{ inputs.aws_eks_create }}
         aws_eks_region: ${{ inputs.aws_eks_region }}
         aws_eks_security_group_name_master: ${{ inputs.aws_eks_security_group_name_master }}
-        aws_eks_security_group_name_worker" ${{ inputs.aws_eks_security_group_name_worker }}
+        aws_eks_security_group_name_worker: ${{ inputs.aws_eks_security_group_name_worker }}
         aws_eks_environment: ${{ inputs.aws_eks_environment }}
         aws_eks_stackname: ${{ inputs.aws_eks_stackname }}
         aws_eks_cidr_block: ${{ inputs.aws_eks_cidr_block }}
