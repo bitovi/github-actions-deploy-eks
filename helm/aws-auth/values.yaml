@@ -25,4 +25,9 @@ data:
       "username": "system:node:{{EC2PrivateDNSName}}"
     - "groups":
       - "system:masters"
-      "rolearn": "arn:aws:iam::755521597925:user/deploy-eks"    
+      "rolearn": "arn:aws:iam::755521597925:user/deploy-eks" 
+  mapUsers: |
+    - "userarn": arn:aws:iam::755521597925:user/deploy-eks
+      "username": "deploy-eks"
+      groups:
+        - "system:masters "      
