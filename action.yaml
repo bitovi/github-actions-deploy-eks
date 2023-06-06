@@ -9,6 +9,12 @@ inputs:
     description: 'Specifies if this action should checkout the code'
     required: false
     default: 'true'
+  bitops_code_only:
+    description: 'Will run only the generation phase of BitOps, where the Terraform and Ansible code is built.'
+    required: false
+  bitops_code_store:
+    description: 'Store BitOps code as a GitHub artifact'
+    required: false
 
   # AWS
 
@@ -99,11 +105,12 @@ runs:
       id: deploy
       uses: bitovi/github-actions-commons@eks
       with:
+        bitops_code_only: ${{ inputs.bitops_code_only }}
+        bitops_code_store: ${{ inputs.bitops_code_store }}
         # Current repo vars
         gh_action_repo: ${{ github.action_path }}
 
       #AWS
-
         aws_access_key_id: ${{ inputs.aws_access_key_id }}
         aws_secret_access_key: ${{ inputs.aws_secret_access_key }}
         aws_session_token: ${{ inputs.aws_session_token }}
