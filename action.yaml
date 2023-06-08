@@ -114,7 +114,7 @@ runs:
         bitops_code_store: ${{ inputs.bitops_code_store }}
         # Current repo vars
         gh_action_repo: ${{ github.action_path }}
-        #gh_action_input_helm_charts: helm
+        gh_action_input_helm_charts: operations/deployment/helm
         gh_deployment_input_helm_charts: ${{ inputs.input_helm_charts }}
 
       #AWS
