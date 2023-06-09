@@ -14,8 +14,8 @@ data:
     - "groups":
       - "system:bootstrappers"
       - "system:nodes"
-      "rolearn": "arn:aws:iam::000000000000:role/prod-eksworker"
+      "rolearn": "arn:aws:iam::000000000:role/prod-eksworker"
       "username": "system:node:{{EC2PrivateDNSName}}"
     - "groups":
       - "system:masters"
-      "rolearn": "arn:aws:iam::000000000000:role/AWSReservedSSO_AdministratorAccess_11111111111"
+      "rolearn": "arn:aws:iam::000000000:role/AWSReservedSSO_AdministratorAccess_1111111111"

@@ -4,8 +4,19 @@ kind: ConfigMap
 metadata:
   name: {{ .Values.configmap.name }}
 data:
+{{- if .Values.data.mapAccounts }}
   mapAccounts: |
     {{ .Values.data.mapAccounts| nindent 4 | trim }}
+{{- end }} 
+
+{{- if .Values.data.mapRoles }}
   mapRoles: |
     {{ .Values.data.mapRoles| nindent 4 | trim }}
 {{- end }} 
+
+{{- if .Values.data.mapUsers }}
+  mapUsers: |
+    {{ .Values.data.mapUsers| nindent 4 | trim }}
+{{- end }} 
+
+{{- end }}
