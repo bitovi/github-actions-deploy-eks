@@ -73,9 +73,6 @@ inputs:
   aws_eks_cluster_version:
     description: 'Specify the k8s cluster version'
     required: false 
-  aws_eks_image_id:
-    description: 'enter the aws ami related to kubernetes version'
-    required: false 
   aws_eks_instance_type:
     description: 'enter the aws instance type'
     required: false 
@@ -85,6 +82,9 @@ inputs:
   aws_eks_ec2_key_pair:
     description: 'Enter the existing ec2 key pair for worker nodes'
     required: true 
+  aws_eks_store_keypair_sm:
+    description: 'If true, will store the newly created keys in Secret Manager'
+    required: false 
   aws_eks_desired_capacity:
     description: 'Enter the desired capacity for the worker nodes' 
     required: false
@@ -138,10 +138,10 @@ runs:
         aws_eks_cluster_name: ${{ inputs.aws_eks_cluster_name }}
         aws_eks_cluster_log_types: ${{ inputs.aws_eks_cluster_log_types}}
         aws_eks_cluster_version: ${{ inputs.aws_eks_cluster_version }}
-        aws_eks_image_id: ${{ inputs.aws_eks_image_id }}
         aws_eks_instance_type: ${{ inputs.aws_eks_instance_type }}
         aws_eks_user_data_file: ${{ inputs.aws_eks_user_data_file}}
         aws_eks_ec2_key_pair: ${{ inputs.aws_eks_ec2_key_pair }}
+        aws_eks_store_keypair_sm: ${{ inputs.aws_eks_store_keypair_sm }}
         aws_eks_desired_capacity: ${{ inputs.aws_eks_desired_capacity}}
         aws_eks_max_size: ${{ inputs.aws_eks_max_size }}
         aws_eks_min_size: ${{ inputs.aws_eks_min_size }}  
