@@ -4,7 +4,7 @@ branding:
   icon: upload-cloud
   color: red
 inputs:
-  # Checkout
+  # Action definitions
   checkout:
     description: 'Specifies if this action should checkout the code'
     required: false
@@ -14,6 +14,9 @@ inputs:
     required: false
   bitops_code_store:
     description: 'Store BitOps code as a GitHub artifact'
+    required: false
+  tf_state_bucket_destroy:
+    description: 'Force purge and deletion of S3 bucket defined. Any file contained there will be destroyed. Will only run if aws_eks_create is set to false.' 
     required: false
 
   # AWS
@@ -30,7 +33,6 @@ inputs:
     required: false
 
   #  EKS
-
   aws_eks_create:
     description: 'Define if an EKS cluster should be created'
     required: false
@@ -98,9 +100,6 @@ inputs:
   input_helm_charts: 
     description: 'Relative path to the folder from project containing Helm charts to be installed. Could be uncompressed or compressed (.tgz) files.'
     required: false
-  gh_action_input_helm_charts:
-    description: 'Relative path to the folder from action containing Helm charts to be installed. Could be uncompressed or compressed (.tgz) files.'
-    required: false
 
 runs:
   using: 'composite'
@@ -112,6 +111,8 @@ runs:
       with:
         bitops_code_only: ${{ inputs.bitops_code_only }}
         bitops_code_store: ${{ inputs.bitops_code_store }}
+        tf_state_bucket_destroy: ${{ inputs.tf_state_bucket_destroy }}
+
         # Current repo vars
         gh_action_repo: ${{ github.action_path }}
         gh_action_input_helm_charts: operations/deployment/helm
