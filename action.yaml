@@ -89,9 +89,6 @@ inputs:
   aws_eks_instance_user_data_file:
     description: 'Relative path in the repo for a user provided script to be executed with the EC2 Instance creation.'
     required: false
-  aws_eks_instance_user_data_file:
-    description: 'enter the eks user data file'
-    required: false   
   aws_eks_ec2_key_pair:
     description: 'Enter the existing ec2 key pair for worker nodes'
     required: true 
