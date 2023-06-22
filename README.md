@@ -111,28 +111,28 @@ instance_image ?
 #### **Action defaults Inputs**
 | Name             | Type    | Description                        |
 |------------------|---------|------------------------------------|
-| `aws_eks_create` | String | Define if an EKS cluster should be created |
-| `aws_eks_region` | String | Define the region where EKS cluster should be created |
-| `aws_eks_security_group_name_master` | String | Define the security group name master |
-| `aws_eks_security_group_name_worker` | String | Define the security group name worker |
-| `aws_eks_environment` | String | Specify the eks environment name. ex: `dev` or `test` |
-| `aws_eks_stackname` | String | Specify the eks stack name for your environment. (ex: `eks-test`) |
-| `aws_eks_cidr_block` | String | Define Base CIDR block which is divided into subnet CIDR blocks (ex: `10.0.0.0/16`) |
-| `aws_eks_workstation_cidr` | String | Enter your remote public CIDR or IP to add it to Worker nodes security groups |
-| `aws_eks_availability_zones` | String | Comma separated list of availability zones |
-| `aws_eks_private_subnets` | String | Comma separated list of private subnets. |
-| `aws_eks_public_subnets` | String | Comma separated list of public subnets. |
-| `aws_eks_cluster_name` | String | Specify the k8s cluster name |
-| `aws_eks_cluster_log_types` | String | Specify the k8s cluster log type |
+| `aws_eks_create` | Boolean | Define if an EKS cluster should be created |
+| `aws_eks_region` | String | Define the region where EKS cluster should be created. Defaults to `us-east-1`. |
+| `aws_eks_security_group_name_master` | String | Define the security group name master. Defaults to `SG for ${GITHUB_ORG_NAME}-${GITHUB_REPO_NAME}-${GITHUB_BRANCH_NAME} - ${aws_eks_environment} - EKS Master`. |
+| `aws_eks_security_group_name_worker` | String | Define the security group name worker. Defaults to `SG for ${GITHUB_ORG_NAME}-${GITHUB_REPO_NAME}-${GITHUB_BRANCH_NAME} - ${aws_eks_environment} - EKS Worker`. |
+| `aws_eks_environment` | String | Specify the eks environment name. Defaults to `env` |
+| `aws_eks_stackname` | String | Specify the eks stack name for your environment. Defaults to `eks-stack`.  |
+| `aws_eks_cidr_block` | String | Define Base CIDR block which is divided into subnet CIDR blocks. Defaults to `10.0.0.0/16`. |
+| `aws_eks_workstation_cidr` | String | Comma separated list of remote public CIDRs blocks to add it to Worker nodes security groups. |
+| `aws_eks_availability_zones` | String | Comma separated list of availability zones. Defaults to `us-east-1a,us-east-1b`.  |
+| `aws_eks_private_subnets` | String | Comma separated list of private subnets. Defaults to `10.0.1.0/24,10.0.2.0/24`. |
+| `aws_eks_public_subnets` | String | Comma separated list of public subnets. Defaults to `10.0.101.0/24,10.0.102.0/24`|
+| `aws_eks_cluster_name` | String | Specify the k8s cluster name. Defaults to `${GITHUB_ORG_NAME}-${GITHUB_REPO_NAME}-${GITHUB_BRANCH_NAME}-cluster` |
+| `aws_eks_cluster_log_types` | String | Comma separated list of cluster log type. See [this AWS doc](https://docs.aws.amazon.com/eks/latest/userguide/control-plane-logs.html). Defaults to `none`. |
 | `aws_eks_cluster_version` | String | Specify the k8s cluster version. Defaults to `1.27` |
-| `aws_eks_instance_type` | String | Define the EC2 instance type. See [this list](https://aws.amazon.com/ec2/instance-types/) for reference. |
+| `aws_eks_instance_type` | String | Define the EC2 instance type. See [this list](https://aws.amazon.com/ec2/instance-types/) for reference. Defaults to `t3a.medium`. |
 | `aws_eks_instance_ami_id` | String | AWS AMI ID. Will default to the latest Amazon EKS Node image for the cluster version. |
-| `aws_eks_instance_user_data_file` | String | Relative path in the repo for a user provided script to be executed with the EC2 Instance creation. |
-| `aws_eks_ec2_key_pair` | String | Enter the existing ec2 key pair for worker nodes. If none, will create one. |
-| `aws_eks_store_keypair_sm` | String | If true, will store the newly created keys in Secret Manager |
-| `aws_eks_desired_capacity` | String | Enter the desired capacity for the worker nodes |
-| `aws_eks_max_size` | String | Enter the max_size for the worker nodes |
-| `aws_eks_min_size` | String | Enter the min_size for the worker nodes |
+| `aws_eks_instance_user_data_file` | String | Relative path in the repo for a user provided script to be executed with the EC2 Instance creation. See note. |
+| `aws_eks_ec2_key_pair` | String | Enter an existing ec2 key pair name for worker nodes. If none, will create one. |
+| `aws_eks_store_keypair_sm` | Boolean | If true, will store the newly created keys in Secret Manager. |
+| `aws_eks_desired_capacity` | String | Enter the desired capacity for the worker nodes. Defaults to `2`. |
+| `aws_eks_max_size` | String | Enter the max_size for the worker nodes. Defaults to `4`. |
+| `aws_eks_min_size` | String | Enter the min_size for the worker nodes. Defaults to `2`. |
 | `input_helm_charts` | String | Relative path to the folder from project containing Helm charts to be installed. Could be uncompressed or compressed (.tgz) files. |
 <hr/>
 <br/>
@@ -149,6 +149,12 @@ For some specific resources, we have a 32 characters limit. If the identifier le
 ### S3 buckets naming
 
 Buckets names can be made of up to 63 characters. If the length allows us to add -tf-state, we will do so. If not, a simple -tf will be added.
+
+## EC2 User data
+
+You can provide any bash script you wish to run after instance creation. See [this note](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html#user-data-shell-scripts).
+
+As a default, if not setting any instance ami_id, we will take care of setting up the amazon-ssm-agent, point to the cluster endpoint, some nfs tools and update the instance name tag to be ${aws_eks_environment}-eksworker-node-${private-ip} once it's done.
 
 ## Made with BitOps
 [BitOps](https://bitops.sh) allows you to define Infrastructure-as-Code for multiple tools in a central place.  This action uses a BitOps [Operations Repository](https://bitops.sh/operations-repo-structure/) to set up the necessary Terraform and Ansible to create infrastructure and deploy to it.
