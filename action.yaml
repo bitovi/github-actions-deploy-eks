@@ -1,0 +1,158 @@
+name: 'Deploy ESK to AWS'
+description: 'Deploy Kubernetes Service (EKS) to AWS'
+branding:
+  icon: upload-cloud
+  color: red
+inputs:
+  # Action definitions
+  checkout:
+    description: 'Specifies if this action should checkout the code'
+    required: false
+    default: 'true'
+  bitops_code_only:
+    description: 'Will run only the generation phase of BitOps, where the Terraform and Ansible code is built.'
+    required: false
+  bitops_code_store:
+    description: 'Store BitOps code as a GitHub artifact'
+    required: false
+  tf_state_bucket:
+    description: 'AWS S3 bucket to use for Terraform state. Defaults to `${org}-${repo}-{branch}-tf-state`'
+    required: false
+  tf_state_bucket_destroy:
+    description: 'Force purge and deletion of S3 bucket defined. Any file contained there will be destroyed. Will only run if aws_eks_create is set to false.' 
+    required: false
+
+  # AWS
+  aws_access_key_id:
+    description: 'AWS access key ID'
+    required: false
+  aws_secret_access_key:
+    description: 'AWS secret access key'
+    required: false
+  aws_session_token:
+    description: 'AWS session token'
+    required: false
+  aws_default_region:
+    description: 'AWS default region'
+    default: us-east-1
+    required: false
+
+  #  EKS
+  aws_eks_create:
+    description: 'Define if an EKS cluster should be created'
+    required: false
+  aws_eks_region:
+    description: 'Define the region where EKS cluster should be created'
+    required: false
+  aws_eks_security_group_name_master:
+    description: 'Define the security group name master'
+    required: false
+  aws_eks_security_group_name_worker:
+    description: 'Define the security group name worker'
+    required: false  
+  aws_eks_environment:
+    description: 'Specify the eks environment name. ex: dev or test'
+    required: false
+  aws_eks_stackname:
+    description: 'Specify the eks stack name for your environment. Ex: eks-test'
+    required: false  
+  aws_eks_cidr_block:
+    description: 'Define Base CIDR block which is divided into subnet CIDR blocks (e.g. `10.0.0.0/16`)'
+    required: false  
+  aws_eks_workstation_cidr:
+    description: 'Enter your local workstation public IP to add it to Worker nodes security groups' 
+    required: true 
+  aws_eks_availability_zones:
+    description: "List of Availability Zones, Ex: `['us-east-1a', 'us-east-1b', 'us-east-1c']`"
+    required: false 
+  aws_eks_private_subnets:
+    description:  "List of private subnets (e.g. `['10.0.1.0/24', '10.0.2.0/24']`)"
+    required: false 
+  aws_eks_public_subnets:
+    description:  "List of public subnets (e.g. `['10.0.101.0/24', '10.0.102.0/24']`)"
+    required: false 
+  aws_eks_cluster_name:
+    description: 'Specify the k8s cluster name'
+    required: false   
+  aws_eks_cluster_log_types:
+    description: 'Specify the k8s cluster log type'
+    required: false   
+  aws_eks_cluster_version:
+    description: 'Specify the k8s cluster version'
+    required: false 
+  aws_eks_instance_type:
+    description: 'enter the aws instance type'
+    required: false 
+  aws_eks_instance_ami_id:
+    description: 'AWS AMI ID. Will default to the latest Amazon EKS Node image for the cluster version.'
+    required: false
+  aws_eks_instance_user_data_file:
+    description: 'Relative path in the repo for a user provided script to be executed with the EC2 Instance creation.'
+    required: false
+  aws_eks_ec2_key_pair:
+    description: 'Enter the existing ec2 key pair for worker nodes'
+    required: true 
+  aws_eks_store_keypair_sm:
+    description: 'If true, will store the newly created keys in Secret Manager'
+    required: false 
+  aws_eks_desired_capacity:
+    description: 'Enter the desired capacity for the worker nodes' 
+    required: false
+  aws_eks_max_size:
+    description: 'Enter the max_size for the worker nodes' 
+    required: false
+  aws_eks_min_size:
+    description: 'Enter the min_size for the worker nodes'
+    required: false
+
+  input_helm_charts: 
+    description: 'Relative path to the folder from project containing Helm charts to be installed. Could be uncompressed or compressed (.tgz) files.'
+    required: false
+
+runs:
+  using: 'composite'
+  steps:
+
+    - name: Deploy with BitOps
+      id: deploy
+      uses: bitovi/github-actions-commons@eks
+      with:
+        bitops_code_only: ${{ inputs.bitops_code_only }}
+        bitops_code_store: ${{ inputs.bitops_code_store }}
+        tf_state_bucket: ${{ inputs.tf_state_bucket }}
+        tf_state_bucket_destroy: ${{ inputs.tf_state_bucket_destroy }}
+
+        # Current repo vars
+        gh_action_repo: ${{ github.action_path }}
+        gh_action_input_helm_charts: operations/deployment/helm
+        gh_deployment_input_helm_charts: ${{ inputs.input_helm_charts }}
+
+      #AWS
+        aws_access_key_id: ${{ inputs.aws_access_key_id }}
+        aws_secret_access_key: ${{ inputs.aws_secret_access_key }}
+        aws_session_token: ${{ inputs.aws_session_token }}
+        aws_default_region: ${{ inputs.aws_default_region }}  
+
+      # AWS EKS
+        aws_eks_create: ${{ inputs.aws_eks_create }}
+        aws_eks_region: ${{ inputs.aws_eks_region }}
+        aws_eks_security_group_name_master: ${{ inputs.aws_eks_security_group_name_master }}
+        aws_eks_security_group_name_worker: ${{ inputs.aws_eks_security_group_name_worker }}
+        aws_eks_environment: ${{ inputs.aws_eks_environment }}
+        aws_eks_stackname: ${{ inputs.aws_eks_stackname }}
+        aws_eks_cidr_block: ${{ inputs.aws_eks_cidr_block }}
+        aws_eks_workstation_cidr: ${{ inputs.aws_eks_workstation_cidr }}
+        aws_eks_availability_zones: ${{ inputs.aws_eks_availability_zones }}
+        aws_eks_private_subnets: ${{ inputs.aws_eks_private_subnets }}
+        aws_eks_public_subnets: ${{ inputs.aws_eks_public_subnets }}
+        aws_eks_cluster_name: ${{ inputs.aws_eks_cluster_name }}
+        aws_eks_cluster_log_types: ${{ inputs.aws_eks_cluster_log_types}}
+        aws_eks_cluster_version: ${{ inputs.aws_eks_cluster_version }}
+        aws_eks_instance_type: ${{ inputs.aws_eks_instance_type }}
+        aws_eks_instance_ami_id: ${{ inputs.aws_eks_instance_ami_id }}
+        aws_eks_instance_user_data_file: ${{ inputs.aws_eks_instance_user_data_file}}
+        aws_eks_ec2_key_pair: ${{ inputs.aws_eks_ec2_key_pair }}
+        aws_eks_store_keypair_sm: ${{ inputs.aws_eks_store_keypair_sm }}
+        aws_eks_desired_capacity: ${{ inputs.aws_eks_desired_capacity}}
+        aws_eks_max_size: ${{ inputs.aws_eks_max_size }}
+        aws_eks_min_size: ${{ inputs.aws_eks_min_size }}  
