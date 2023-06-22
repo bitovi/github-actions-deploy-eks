@@ -82,23 +82,18 @@ The following inputs can be used as `step.with` keys
 <br/>
 <br/>
 
-
-
-user_data_file ?  está al pepe
-instance_image ?
-
 #### **Action defaults Inputs**
 | Name             | Type    | Description                        |
 |------------------|---------|------------------------------------|
 | `checkout` | Boolean | Set to `false` if the code is already checked out. (Default is `true`). |
-| `bitops_code_only` | Boolean  | Set to `true` to destroy the stack - Will delete the `elb logs bucket` after the destroy action runs. |
-| `bitops_code_store` | Boolean | AWS access key ID |
+| `bitops_code_only` | Boolean  | Set to `true` to run a code generation test. |
+| `bitops_code_store` | Boolean | Store the generated code in an artifact to download. |
 | `tf_state_bucket` | String | AWS S3 bucket name to use for Terraform state. See [note](#s3-buckets-naming) | 
-| `tf_state_bucket_destroy` | Boolean | Force purge and deletion of S3 bucket defined. Any file contained there will be destroyed. `stack_destroy` must also be `true`. Default is `false`. |
+| `tf_state_bucket_destroy` | Boolean | Force purge and deletion of S3 bucket defined. Any file contained there will be destroyed. `aws_eks_create` must also be `false`. |
 <hr/>
 <br/>
 
-#### **Action defaults Inputs**
+#### **AWS Inputs**
 | Name             | Type    | Description                        |
 |------------------|---------|------------------------------------|
 | `aws_access_key_id` | String | AWS access key ID |
@@ -108,7 +103,7 @@ instance_image ?
 <hr/>
 <br/>
 
-#### **Action defaults Inputs**
+#### **EKS Inputs**
 | Name             | Type    | Description                        |
 |------------------|---------|------------------------------------|
 | `aws_eks_create` | Boolean | Define if an EKS cluster should be created |
