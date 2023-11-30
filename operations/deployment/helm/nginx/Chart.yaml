@@ -1,5 +1,5 @@
 apiVersion: v2
 appVersion: "1.0"
-description: aws-auth configmap for EKS
-name: aws-auth
+description: nginx configmap for EKS
+name: nginx
 version: 0.1.0

@@ -1,6 +1,6 @@
 configmap:
   enabled: true
-  name: aws-auth
+  name: nginx
 data:
 
   # account number

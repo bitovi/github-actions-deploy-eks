@@ -7,7 +7,7 @@ helm:
     force: false
     dry-run: false
   options:
-    release-name: aws-auth
+    release-name: anginx
     skip-deploy: false
     k8s:
       fetch:
