@@ -1,4 +1,4 @@
-name: 'Deploy ESK to AWS'
+name: 'Deploy EKS to AWS'
 description: 'Deploy Kubernetes Service (EKS) to AWS'
 branding:
   icon: upload-cloud
