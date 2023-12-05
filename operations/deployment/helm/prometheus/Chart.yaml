@@ -1,5 +1,0 @@
-apiVersion: v2
-appVersion: "1.0"
-description: prometheus configmap for EKS
-name: prometheus
-version: 0.1.0
