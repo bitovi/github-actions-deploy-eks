@@ -21,6 +21,9 @@ inputs:
   tf_state_bucket_destroy:
     description: 'Force purge and deletion of S3 bucket defined. Any file contained there will be destroyed. Will only run if aws_eks_create is set to false.' 
     required: false
+  tf_stack_destroy:
+    description: 'Set to "true" to Destroy the stack through Terraform.'
+    required: false
 
   # AWS
   aws_access_key_id:
@@ -121,6 +124,7 @@ runs:
         bitops_code_store: ${{ inputs.bitops_code_store }}
         tf_state_bucket: ${{ inputs.tf_state_bucket }}
         tf_state_bucket_destroy: ${{ inputs.tf_state_bucket_destroy }}
+        tf_stack_destroy: ${{ inputs.tf_stack_destroy }}
 
         # Current repo vars
         gh_action_repo: ${{ github.action_path }}
