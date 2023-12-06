@@ -1,14 +1,15 @@
 helm:
   cli:
-    namespace: grafana
+    namespace: kube-system
     timeout: 200s
     debug: true
     atomic: false
     force: false
     dry-run: false
   options:
-    release-name: grafana
+    release-name: aws-auth2
     skip-deploy: false
     k8s:
       fetch:
         kubeconfig: true
+        cluster-name: prod-ekscluster
