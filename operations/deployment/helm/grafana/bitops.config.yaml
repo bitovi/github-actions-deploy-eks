@@ -1,6 +1,6 @@
 helm:
   cli:
-    namespace: kube-system
+    namespace: grafana
     timeout: 200s
     debug: true
     atomic: false
