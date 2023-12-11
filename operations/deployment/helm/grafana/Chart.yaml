@@ -16,18 +16,3 @@ annotations:
       url: https://github.com/grafana/helm-charts
     - name: Upstream Project
       url: https://github.com/grafana/grafana
-maintainers:
-  - name: zanhsieh
-    email: zanhsieh@gmail.com
-  - name: rtluckie
-    email: rluckie@cisco.com
-  - name: maorfr
-    email: maor.friedman@redhat.com
-  - name: Xtigyro
-    email: miroslav.hadzhiev@gmail.com
-  - name: torstenwalter
-    email: mail@torstenwalter.de
-type: application
-keywords:
-  - monitoring
-  - metric
