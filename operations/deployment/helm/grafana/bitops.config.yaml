@@ -1,0 +1,16 @@
+helm:
+  cli:
+    namespace: grafana
+    timeout: 120s
+    debug: true
+    atomic: true
+    force: false
+    dry-run: false
+  options:
+    release-name: grafana
+    skip-deploy: false
+    kubeconfig:
+      fetch:
+        enabled: true
+        cluster-name: recruiting-recruiting-recruiting-ekscluster
+
