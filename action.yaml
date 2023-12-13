@@ -168,19 +168,19 @@ runs:
         aws_eks_desired_capacity: ${{ inputs.aws_eks_desired_capacity}}
         aws_eks_max_size: ${{ inputs.aws_eks_max_size }}
         aws_eks_min_size: ${{ inputs.aws_eks_min_size }}
-# only deploy prometheus with this
-    - if: ${{ inputs.prometheus-enable == 'true' }}
-      name: Install prometheus
-      id: deploy
-      uses: bitovi/github-actions-commons@v0.0.2
-      with:
-        bitops_code_only: ${{ inputs.bitops_code_only }}
-        bitops_code_store: ${{ inputs.bitops_code_store }}
-# only deploy grafana with this
-    - if: ${{ inputs.grafana-enable == 'true' }}
-      name: Install grafana
-      id: deploy
-      uses: bitovi/github-actions-commons@v0.0.2
-      with:
-        bitops_code_only: ${{ inputs.bitops_code_only }}
-        bitops_code_store: ${{ inputs.bitops_code_store }}
+# # only deploy prometheus with this
+#     - if: ${{ inputs.prometheus-enable == 'true' }}
+#       name: Install prometheus
+#       id: deploy
+#       uses: bitovi/github-actions-commons@v0.0.2
+#       with:
+#         bitops_code_only: ${{ inputs.bitops_code_only }}
+#         bitops_code_store: ${{ inputs.bitops_code_store }}
+# # only deploy grafana with this
+#     - if: ${{ inputs.grafana-enable == 'true' }}
+#       name: Install grafana
+#       id: deploy
+#       uses: bitovi/github-actions-commons@v0.0.2
+#       with:
+#         bitops_code_only: ${{ inputs.bitops_code_only }}
+#         bitops_code_store: ${{ inputs.bitops_code_store }}
