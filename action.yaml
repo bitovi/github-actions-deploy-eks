@@ -38,9 +38,6 @@ inputs:
   tf_state_bucket_destroy:
     description: 'Force purge and deletion of S3 bucket defined. Any file contained there will be destroyed. `tf_stack_destroy` must also be `true`'
     required: false
-  tf_stack_destroy:
-    description: 'Set to "true" to Destroy the stack through Terraform.'
-    required: false
 
   # AWS
   aws_access_key_id:
@@ -187,7 +184,6 @@ runs:
         tf_state_file_name_append: ${{ inputs.tf_state_file_name_append }}
         tf_state_bucket: ${{ inputs.tf_state_bucket }}
         tf_state_bucket_destroy: ${{ inputs.tf_state_bucket_destroy }}
-        tf_stack_destroy: ${{ inputs.tf_stack_destroy }}
 
         # Current repo vars
         gh_action_repo: ${{ github.action_path }}
