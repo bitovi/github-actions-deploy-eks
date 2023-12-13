@@ -23,11 +23,20 @@ inputs:
   bitops_code_store:
     description: 'Store BitOps code as a GitHub artifact'
     required: false
+  tf_stack_destroy:
+    description: 'Set to "true" to Destroy the stack through Terraform.'
+    required: false
+  tf_state_file_name:
+    description: 'Change this to be anything you want to. Carefull to be consistent here. A missing file could trigger recreation, or stepping over destruction of non-defined objects.'
+    required: false
+  tf_state_file_name_append:
+    description: 'Append a string to the tf-state-file. Setting this to `unique` will generate `tf-state-aws-unique`. Can co-exist with the tf_state_file_name variable. '
+    required: false
   tf_state_bucket:
     description: 'AWS S3 bucket to use for Terraform state. Defaults to `${org}-${repo}-{branch}-tf-state`'
     required: false
   tf_state_bucket_destroy:
-    description: 'Force purge and deletion of S3 bucket defined. Any file contained there will be destroyed. Will only run if aws_eks_create is set to false.' 
+    description: 'Force purge and deletion of S3 bucket defined. Any file contained there will be destroyed. `tf_stack_destroy` must also be `true`'
     required: false
   tf_stack_destroy:
     description: 'Set to "true" to Destroy the stack through Terraform.'
@@ -47,47 +56,42 @@ inputs:
     description: 'AWS default region'
     default: us-east-1
     required: false
+  aws_resource_identifier:
+    description: 'Set to override the AWS resource identifier for the deployment.  Defaults to `${org}-{repo}-{branch}`.  Use with destroy to destroy specific resources.'
+    required: false
+  aws_additional_tags:
+    description: 'A JSON object of additional tags that will be included on created resources. Example: `{"key1": "value1", "key2": "value2"}`'
+    required: false
 
   #  EKS
   aws_eks_create:
     description: 'Define if an EKS cluster should be created'
     required: false
-  aws_eks_region:
-    description: 'Define the region where EKS cluster should be created'
-    required: false
+    default: true
   aws_eks_security_group_name_master:
-    description: 'Define the security group name master'
+    description:  "SG for ${var.aws_resource_identifier} - ${var.aws_eks_environment} - EKS Master"
     required: false
   aws_eks_security_group_name_worker:
-    description: 'Define the security group name worker'
-    required: false  
-  aws_eks_environment:
-    description: 'Specify the eks environment name. ex: dev or test'
+    description:  "SG for ${var.aws_resource_identifier} - ${var.aws_eks_environment} - EKS Worker"
     required: false
-  aws_eks_stackname:
-    description: 'Specify the eks stack name for your environment. Ex: eks-test'
-    required: false  
-  aws_eks_cidr_block:
-    description: 'Define Base CIDR block which is divided into subnet CIDR blocks (e.g. `10.0.0.0/16`)'
-    required: false  
-  aws_eks_workstation_cidr:
-    description: 'Enter your local workstation public IP to add it to Worker nodes security groups' 
-    required: true 
-  aws_eks_availability_zones:
-    description: "List of Availability Zones, Ex: `['us-east-1a', 'us-east-1b', 'us-east-1c']`"
+  aws_eks_environment:
+    description: 'Specify the eks environment name. Defaults to env'
+    required: false
+  aws_eks_management_cidr:
+    description: 'Enter your public IP or CIDR to add it to the allowed master security groups port 443.' 
     required: false 
-  aws_eks_private_subnets:
-    description:  "List of private subnets (e.g. `['10.0.1.0/24', '10.0.2.0/24']`)"
-    required: false 
-  aws_eks_public_subnets:
-    description:  "List of public subnets (e.g. `['10.0.101.0/24', '10.0.102.0/24']`)"
-    required: false 
+  aws_eks_allowed_ports:
+    description: 'Allow incoming traffic from this port. Accepts comma separated values, matching 1 to 1 with aws_eks_allowed_ports_cidr.'
+    required: false
+  aws_eks_allowed_ports_cidr:
+    description: 'Allow incoming traffic from this CIDR block. Accepts comma separated values, matching 1 to 1 with aws_eks_allowed_ports. If none defined, will allow all incoming traffic.'
+    required: false
   aws_eks_cluster_name:
-    description: 'Specify the k8s cluster name'
-    required: false   
+    description: "EKS Cluster name. Defaults to eks-cluster"
+    required: false
   aws_eks_cluster_log_types:
-    description: 'Specify the k8s cluster log type'
-    required: false   
+    description: "EKS Log types, csv list"
+    required: false
   aws_eks_cluster_version:
     description: 'Specify the k8s cluster version'
     required: false 
@@ -98,11 +102,11 @@ inputs:
     description: 'AWS AMI ID. Will default to the latest Amazon EKS Node image for the cluster version.'
     required: false
   aws_eks_instance_user_data_file:
-    description: 'Relative path in the repo for a user provided script to be executed with the EC2 Instance creation.'
+    description: 'Relative path in the repo for a user provided script to be executed with Terraform EKS Node creation.'
     required: false
   aws_eks_ec2_key_pair:
-    description: 'Enter the existing ec2 key pair for worker nodes'
-    required: true 
+    description: 'Enter the existing ec2 key pair for worker nodes. If none, one will be created.'
+    required: false 
   aws_eks_store_keypair_sm:
     description: 'If true, will store the newly created keys in Secret Manager'
     required: false 
@@ -115,7 +119,55 @@ inputs:
   aws_eks_min_size:
     description: 'Enter the min_size for the worker nodes'
     required: false
+  aws_eks_additional_tags:
+    description: 'A JSON object of additional tags that will be included on created resources. Example: `{"key1": "value1", "key2": "value2"}`'
+    required: false
 
+  # AWS VPC Inputs
+  aws_vpc_create:
+    description: 'Define if a VPC should be created'
+    required: false
+    default: true
+  aws_vpc_name:
+    description: 'Set a specific name for the VPC'
+    required: false
+  aws_vpc_cidr_block:
+    description: 'Define Base CIDR block which is divided into subnet CIDR blocks. Defaults to 10.0.0.0/16.'
+    required: false
+    default: 10.0.0.0/16
+  aws_vpc_public_subnets:
+    description: 'Comma separated list of public subnets. Defaults to 10.10.110.0/24'
+    required: false
+    default: 10.0.101.0/24,10.0.102.0/24
+  aws_vpc_private_subnets:
+    description: 'Comma separated list of private subnets. If none, none will be created.'
+    required: false
+    default: 10.0.1.0/24,10.0.2.0/24
+  aws_vpc_availability_zones:
+    description: 'Comma separated list of availability zones. Defaults to `aws_default_region.'
+    required: false
+    default: us-east-1a,us-east-1b
+  aws_vpc_id:
+    description: 'AWS VPC ID. Accepts `vpc-###` values.'
+    required: false
+  aws_vpc_subnet_id:
+    description: 'Specify a Subnet to be used with the instance. If none provided, will pick one.'
+    required: false
+  aws_vpc_enable_nat_gateway:
+    description: 'Enables NAT gateway'
+    required: false
+    default: true
+  aws_vpc_single_nat_gateway:
+    description: 'Creates only one NAT gateway'
+    required: false
+  aws_vpc_external_nat_ip_ids:
+    description: 'Comma separated list of IP IDS to reuse in the NAT gateways'
+    required: false
+  aws_vpc_additional_tags:
+    description: 'A JSON object of additional tags that will be included on created resources. Example: `{"key1": "value1", "key2": "value2"}`'
+    required: false
+
+  # Helm input
   input_helm_charts: 
     description: 'Relative path to the folder from project containing Helm charts to be installed. Could be uncompressed or compressed (.tgz) files.'
     required: false
@@ -126,10 +178,13 @@ runs:
 # Only deploy eks with this
     - name: Deploy with BitOps
       id: deploy
-      uses: bitovi/github-actions-commons@v0.0.2
+      uses: bitovi/github-actions-commons@main
       with:
         bitops_code_only: ${{ inputs.bitops_code_only }}
         bitops_code_store: ${{ inputs.bitops_code_store }}
+        tf_stack_destroy: ${{ inputs.tf_stack_destroy }}
+        tf_state_file_name: ${{ inputs.tf_state_file_name }}
+        tf_state_file_name_append: ${{ inputs.tf_state_file_name_append }}
         tf_state_bucket: ${{ inputs.tf_state_bucket }}
         tf_state_bucket_destroy: ${{ inputs.tf_state_bucket_destroy }}
         tf_stack_destroy: ${{ inputs.tf_stack_destroy }}
@@ -139,24 +194,22 @@ runs:
         gh_action_input_helm_charts: operations/deployment/helm
         gh_deployment_input_helm_charts: ${{ inputs.input_helm_charts }}
 
-      #AWS
+       #AWS
         aws_access_key_id: ${{ inputs.aws_access_key_id }}
         aws_secret_access_key: ${{ inputs.aws_secret_access_key }}
         aws_session_token: ${{ inputs.aws_session_token }}
-        aws_default_region: ${{ inputs.aws_default_region }}  
+        aws_default_region: ${{ inputs.aws_default_region }}
+        aws_resource_identifier: ${{ inputs.aws_resource_identifier }}
+        aws_additional_tags: ${{ inputs.aws_additional_tags }}
 
-      # AWS EKS
+        # EKS
         aws_eks_create: ${{ inputs.aws_eks_create }}
-        aws_eks_region: ${{ inputs.aws_eks_region }}
         aws_eks_security_group_name_master: ${{ inputs.aws_eks_security_group_name_master }}
         aws_eks_security_group_name_worker: ${{ inputs.aws_eks_security_group_name_worker }}
         aws_eks_environment: ${{ inputs.aws_eks_environment }}
-        aws_eks_stackname: ${{ inputs.aws_eks_stackname }}
-        aws_eks_cidr_block: ${{ inputs.aws_eks_cidr_block }}
-        aws_eks_workstation_cidr: ${{ inputs.aws_eks_workstation_cidr }}
-        aws_eks_availability_zones: ${{ inputs.aws_eks_availability_zones }}
-        aws_eks_private_subnets: ${{ inputs.aws_eks_private_subnets }}
-        aws_eks_public_subnets: ${{ inputs.aws_eks_public_subnets }}
+        aws_eks_management_cidr: ${{ inputs.aws_eks_management_cidr }}
+        aws_eks_allowed_ports: ${{ inputs.aws_eks_allowed_ports }}
+        aws_eks_allowed_ports_cidr: ${{ inputs.aws_eks_allowed_ports_cidr }}
         aws_eks_cluster_name: ${{ inputs.aws_eks_cluster_name }}
         aws_eks_cluster_log_types: ${{ inputs.aws_eks_cluster_log_types}}
         aws_eks_cluster_version: ${{ inputs.aws_eks_cluster_version }}
@@ -167,20 +220,19 @@ runs:
         aws_eks_store_keypair_sm: ${{ inputs.aws_eks_store_keypair_sm }}
         aws_eks_desired_capacity: ${{ inputs.aws_eks_desired_capacity}}
         aws_eks_max_size: ${{ inputs.aws_eks_max_size }}
-        aws_eks_min_size: ${{ inputs.aws_eks_min_size }}
-# # only deploy prometheus with this
-#     - if: ${{ inputs.prometheus-enable == 'true' }}
-#       name: Install prometheus
-#       id: deploy
-#       uses: bitovi/github-actions-commons@v0.0.2
-#       with:
-#         bitops_code_only: ${{ inputs.bitops_code_only }}
-#         bitops_code_store: ${{ inputs.bitops_code_store }}
-# # only deploy grafana with this
-#     - if: ${{ inputs.grafana-enable == 'true' }}
-#       name: Install grafana
-#       id: deploy
-#       uses: bitovi/github-actions-commons@v0.0.2
-#       with:
-#         bitops_code_only: ${{ inputs.bitops_code_only }}
-#         bitops_code_store: ${{ inputs.bitops_code_store }}
+        aws_eks_min_size: ${{ inputs.aws_eks_min_size }} 
+        aws_eks_additional_tags: ${{ inputs.aws_eks_additional_tags }} 
+
+        # VPC
+        aws_vpc_create: ${{ inputs.aws_vpc_create }}
+        aws_vpc_name: ${{ inputs.aws_vpc_name }}
+        aws_vpc_cidr_block: ${{ inputs.aws_vpc_cidr_block }}
+        aws_vpc_public_subnets: ${{ inputs.aws_vpc_public_subnets }}
+        aws_vpc_private_subnets: ${{ inputs.aws_vpc_private_subnets }}
+        aws_vpc_availability_zones: ${{ inputs.aws_vpc_availability_zones }}
+        aws_vpc_id: ${{ inputs.aws_vpc_id }}
+        aws_vpc_subnet_id: ${{ inputs.aws_vpc_subnet_id }}
+        aws_vpc_enable_nat_gateway: ${{ inputs.aws_vpc_enable_nat_gateway }}
+        aws_vpc_single_nat_gateway: ${{ inputs.aws_vpc_single_nat_gateway }}
+        aws_vpc_external_nat_ip_ids: ${{ inputs.aws_vpc_external_nat_ip_ids }}
+        aws_vpc_additional_tags: ${{ inputs.aws_vpc_additional_tags }}
