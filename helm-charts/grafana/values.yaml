@@ -1,5 +1,3 @@
-# Default values for fluent-bit.
-
 # kind -- DaemonSet or Deployment
 kind: Deployment
 
