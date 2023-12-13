@@ -9,6 +9,14 @@ inputs:
     description: 'Specifies if this action should checkout the code'
     required: false
     default: 'true'
+  prometheus-enable:
+    description: 'Specifies if this action should checkout the code'
+    required: false
+    default: 'false'
+  grafana-enable:
+    description: 'Specifies if this action should checkout the code'
+    required: false
+    default: 'false'
   bitops_code_only:
     description: 'Will run only the generation phase of BitOps, where the Terraform and Ansible code is built.'
     required: false
@@ -115,7 +123,7 @@ inputs:
 runs:
   using: 'composite'
   steps:
-
+# Only deploy eks with this
     - name: Deploy with BitOps
       id: deploy
       uses: bitovi/github-actions-commons@v0.0.2
@@ -159,4 +167,20 @@ runs:
         aws_eks_store_keypair_sm: ${{ inputs.aws_eks_store_keypair_sm }}
         aws_eks_desired_capacity: ${{ inputs.aws_eks_desired_capacity}}
         aws_eks_max_size: ${{ inputs.aws_eks_max_size }}
-        aws_eks_min_size: ${{ inputs.aws_eks_min_size }}  
+        aws_eks_min_size: ${{ inputs.aws_eks_min_size }}
+# only deploy prometheus with this
+    - if: ${{ inputs.prometheus-enable == 'true' }}
+      name: Install prometheus
+      id: deploy
+      uses: bitovi/github-actions-commons@v0.0.2
+      with:
+        bitops_code_only: ${{ inputs.bitops_code_only }}
+        bitops_code_store: ${{ inputs.bitops_code_store }}
+# only deploy grafana with this
+    - if: ${{ inputs.grafana-enable == 'true' }}
+      name: Install grafana
+      id: deploy
+      uses: bitovi/github-actions-commons@v0.0.2
+      with:
+        bitops_code_only: ${{ inputs.bitops_code_only }}
+        bitops_code_store: ${{ inputs.bitops_code_store }}
