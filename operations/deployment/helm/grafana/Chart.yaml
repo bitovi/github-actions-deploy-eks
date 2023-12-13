@@ -1,0 +1,11 @@
+apiVersion: v1
+name: grafana
+description: Fast and lightweight log processor and forwarder or Linux, OSX and BSD family operating systems.
+keywords:
+  - monitoring
+  - metric
+version: 7.0.17
+appVersion: 10.2.2
+home: https://grafana.com
+sources:
+  - https://github.com/grafana/grafana
