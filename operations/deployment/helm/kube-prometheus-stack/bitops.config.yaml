@@ -1,0 +1,14 @@
+helm:
+  cli:
+    namespace: monitoring
+    timeout: 200s
+    debug: true
+    atomic: false
+    force: false
+    dry-run: false
+  options:
+    release-name: kube-prometheus-stack
+    skip-deploy: false
+    k8s:
+      fetch:
+        kubeconfig: true
