@@ -174,11 +174,13 @@ runs:
   steps:
     - name: If grafana is enabled
       if: ${{ inputs.grafana-enable == 'true' }}
+      shell: bash
       run: |
         mv $GITHUB_ACTION_PATH/helm-charts/grafana $GITHUB_ACTION_PATH/operations/deployment/helm
 
     - name: If prometheus is enabled
       if: ${{ inputs.prometheus-enable == 'true' }}
+      shell: bash
       run: |
         mv $GITHUB_ACTION_PATH/helm-charts/prometheus $GITHUB_ACTION_PATH/operations/deployment/helm
 
