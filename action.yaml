@@ -172,7 +172,16 @@ inputs:
 runs:
   using: 'composite'
   steps:
-# Only deploy eks with this
+    - name: If grafana is enabled
+      if: ${{ inputs.grafana-enable == 'true' }}
+      run: |
+        mv $GITHUB_ACTION_PATH/helm-charts/grafana $GITHUB_ACTION_PATH/operations/deployment/helm
+
+    - name: If prometheus is enabled
+      if: ${{ inputs.prometheus-enable == 'true' }}
+      run: |
+        mv $GITHUB_ACTION_PATH/helm-charts/prometheus $GITHUB_ACTION_PATH/operations/deployment/helm
+
     - name: Deploy with BitOps
       id: deploy
       uses: bitovi/github-actions-commons@main
