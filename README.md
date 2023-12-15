@@ -31,6 +31,8 @@ jobs:
         aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID_SANDBOX}}
         aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY_SANDBOX}}
         aws_default_region: us-east-1
+  
+        aws_eks_create: true
 ```
 
 ### Advanced example
@@ -51,10 +53,9 @@ jobs:
         aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID_SANDBOX}}
         aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY_SANDBOX}}
         aws_default_region: us-east-1
-        
-        # tf_stack_destroy: true
         tf_state_bucket_destroy: true 
   
+        aws_eks_create: true
         aws_eks_environment: qa
         aws_eks_stackname: qa-stack
         aws_eks_cluster_version: 1.25
@@ -76,7 +77,6 @@ jobs:
 1. [Action Defaults](#action-defaults-inputs)
 1. [AWS](#aws-inputs)
 1. [EKS](#eks-inputs)
-1. [VPC](#vpc-inputs)
 
 The following inputs can be used as `step.with` keys
 <br/>
@@ -88,11 +88,8 @@ The following inputs can be used as `step.with` keys
 | `checkout` | Boolean | Set to `false` if the code is already checked out. (Default is `true`). |
 | `bitops_code_only` | Boolean  | Set to `true` to run a code generation test. |
 | `bitops_code_store` | Boolean | Store the generated code in an artifact to download. |
-| `tf_stack_destroy` | Boolean  | Set to `true` to destroy the stack - Will delete the `elb logs bucket` after the destroy action runs. |
-| `tf_state_file_name` | String | Change this to be anything you want to. Carefull to be consistent here. A missing file could trigger recreation, or stepping over destruction of non-defined objects. Defaults to `tf-state-aws`. |
-| `tf_state_file_name_append` | String | Appends a string to the tf-state-file. Setting this to `unique` will generate `tf-state-aws-unique`. (Can co-exist with `tf_state_file_name`) |
 | `tf_state_bucket` | String | AWS S3 bucket name to use for Terraform state. See [note](#s3-buckets-naming) | 
-| `tf_state_bucket_destroy` | Boolean | Force purge and deletion of S3 bucket defined. Any file contained there will be destroyed. `tf_stack_destroy` must also be `true`. Default is `false`. |
+| `tf_state_bucket_destroy` | Boolean | Force purge and deletion of S3 bucket defined. Any file contained there will be destroyed. `aws_eks_create` must also be `false`. |
 <hr/>
 <br/>
 
@@ -103,22 +100,24 @@ The following inputs can be used as `step.with` keys
 | `aws_secret_access_key` | String | AWS secret access key |
 | `aws_session_token` | String | AWS session token |
 | `aws_default_region` | String | AWS default region. Defaults to `us-east-1` |
-| `aws_resource_identifier` | String | Set to override the AWS resource identifier for the deployment. Defaults to `${GITHUB_ORG_NAME}-${GITHUB_REPO_NAME}-${GITHUB_BRANCH_NAME}`. |
-| `aws_additional_tags` | JSON | Add additional tags to the terraform [default tags](https://www.hashicorp.com/blog/default-tags-in-the-terraform-aws-provider), any tags put here will be added to all provisioned resources.|
 <hr/>
 <br/>
 
 #### **EKS Inputs**
 | Name             | Type    | Description                        |
 |------------------|---------|------------------------------------|
-| `aws_eks_create` | Boolean | Define if an EKS cluster should be created. Defaults to `true`. |
-f| `aws_eks_security_group_name_master` | String | Define the security group name master. Defaults to `SG for ${var.aws_resource_identifier} - EKS Master`. |
-| `aws_eks_security_group_name_worker` | String | Define the security group name worker. Defaults to `SG for ${var.aws_resource_identifier} - EKS Worker`. |
+| `aws_eks_create` | Boolean | Define if an EKS cluster should be created |
+| `aws_eks_region` | String | Define the region where EKS cluster should be created. Defaults to `us-east-1`. |
+| `aws_eks_security_group_name_master` | String | Define the security group name master. Defaults to `SG for ${GITHUB_ORG_NAME}-${GITHUB_REPO_NAME}-${GITHUB_BRANCH_NAME} - ${aws_eks_environment} - EKS Master`. |
+| `aws_eks_security_group_name_worker` | String | Define the security group name worker. Defaults to `SG for ${GITHUB_ORG_NAME}-${GITHUB_REPO_NAME}-${GITHUB_BRANCH_NAME} - ${aws_eks_environment} - EKS Worker`. |
 | `aws_eks_environment` | String | Specify the eks environment name. Defaults to `env` |
-| `aws_eks_management_cidr` | String | Comma separated list of remote public CIDRs blocks to add it to Worker nodes security groups. |
-| `aws_eks_allowed_ports` | String | Allow incoming traffic from this port. Accepts comma separated values, matching 1 to 1 with `aws_eks_allowed_ports_cidr`. |
-| `aws_eks_allowed_ports_cidr` | String | Allow incoming traffic from this CIDR block. Accepts comma separated values, matching 1 to 1 with `aws_eks_allowed_ports`. If none defined, will allow all incoming traffic. |
-| `aws_eks_cluster_name` | String | Specify the k8s cluster name. Defaults to `${var.aws_resource_identifier}-cluster` |
+| `aws_eks_stackname` | String | Specify the eks stack name for your environment. Defaults to `eks-stack`.  |
+| `aws_eks_cidr_block` | String | Define Base CIDR block which is divided into subnet CIDR blocks. Defaults to `10.0.0.0/16`. |
+| `aws_eks_workstation_cidr` | String | Comma separated list of remote public CIDRs blocks to add it to Worker nodes security groups. |
+| `aws_eks_availability_zones` | String | Comma separated list of availability zones. Defaults to `us-east-1a,us-east-1b`.  |
+| `aws_eks_private_subnets` | String | Comma separated list of private subnets. Defaults to `10.0.1.0/24,10.0.2.0/24`. |
+| `aws_eks_public_subnets` | String | Comma separated list of public subnets. Defaults to `10.0.101.0/24,10.0.102.0/24`|
+| `aws_eks_cluster_name` | String | Specify the k8s cluster name. Defaults to `${GITHUB_ORG_NAME}-${GITHUB_REPO_NAME}-${GITHUB_BRANCH_NAME}-cluster` |
 | `aws_eks_cluster_log_types` | String | Comma separated list of cluster log type. See [this AWS doc](https://docs.aws.amazon.com/eks/latest/userguide/control-plane-logs.html). Defaults to `none`. |
 | `aws_eks_cluster_version` | String | Specify the k8s cluster version. Defaults to `1.27` |
 | `aws_eks_instance_type` | String | Define the EC2 instance type. See [this list](https://aws.amazon.com/ec2/instance-types/) for reference. Defaults to `t3a.medium`. |
@@ -129,26 +128,7 @@ f| `aws_eks_security_group_name_master` | String | Define the security group nam
 | `aws_eks_desired_capacity` | String | Enter the desired capacity for the worker nodes. Defaults to `2`. |
 | `aws_eks_max_size` | String | Enter the max_size for the worker nodes. Defaults to `4`. |
 | `aws_eks_min_size` | String | Enter the min_size for the worker nodes. Defaults to `2`. |
-| `aws_eks_additional_tags` | JSON | Add additional tags to the terraform [default tags](https://www.hashicorp.com/blog/default-tags-in-the-terraform-aws-provider), any tags put here will be added to eks provisioned resources.|
 | `input_helm_charts` | String | Relative path to the folder from project containing Helm charts to be installed. Could be uncompressed or compressed (.tgz) files. |
-<hr/>
-<br/>
-
-#### **VPC Inputs**
-| Name             | Type    | Description                        |
-|------------------|---------|------------------------------------|
-| `aws_vpc_create` | Boolean | Define if a VPC should be created. Defaults to `true`. |
-| `aws_vpc_name` | String | Define a name for the VPC. Defaults to `VPC for ${aws_resource_identifier}`. |
-| `aws_vpc_cidr_block` | String | Define Base CIDR block which is divided into subnet CIDR blocks. Defaults to `10.0.0.0/16`. |
-| `aws_vpc_public_subnets` | String | Comma separated list of public subnets. Defaults to `10.0.101.0/24,10.0.102.0/24`. |
-| `aws_vpc_private_subnets` | String | Comma separated list of private subnets. If no input, no private subnet will be created. Defaults to `10.0.1.0/24,10.0.2.0/24`. |
-| `aws_vpc_availability_zones` | String | Comma separated list of availability zones. Defaults to `us-east-1a,us-east-1b` value. |
-| `aws_vpc_id` | String | **Existing** AWS VPC ID to use. Accepts `vpc-###` values. |
-| `aws_vpc_subnet_id` | String | **Existing** AWS VPC Subnet ID. If none provided, will pick one. (Ideal when there's only one). |
-| `aws_vpc_enable_nat_gateway` | String | Adds a NAT gateway for each public subnet. Defaults to `true`. |
-| `aws_vpc_single_nat_gateway` | String | Toggles only one NAT gateway for all of the public subnets. Defaults to `false`. |
-| `aws_vpc_external_nat_ip_ids` | String | **Existing** comma separated list of IP IDs if reusing. (ElasticIPs). |
-| `aws_vpc_additional_tags` | JSON | Add additional tags to the terraform [default tags](https://www.hashicorp.com/blog/default-tags-in-the-terraform-aws-provider), any tags put here will be added to vpc provisioned resources.|
 <hr/>
 <br/>
 
