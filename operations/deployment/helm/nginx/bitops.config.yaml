@@ -12,5 +12,4 @@ helm:
     kubeconfig:
       fetch:
         enabled: true
-        cluster-name: recruiting-recruiting-recruiting-ekscluster
 
