@@ -184,6 +184,12 @@ runs:
       run: |
         mv $GITHUB_ACTION_PATH/helm-charts/prometheus $GITHUB_ACTION_PATH/operations/deployment/helm
 
+    - name: If loki is enabled
+      if: ${{ inputs.loki == 'true' }}
+      shell: bash
+      run: |
+        mv $GITHUB_ACTION_PATH/helm-charts/loki $GITHUB_ACTION_PATH/operations/deployment/helm
+
     - name: Deploy with BitOps
       id: deploy
       uses: bitovi/github-actions-commons@eks-fixes-bitops-yaml
