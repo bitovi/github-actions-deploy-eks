@@ -190,6 +190,12 @@ runs:
       run: |
         mv $GITHUB_ACTION_PATH/helm-charts/loki $GITHUB_ACTION_PATH/operations/deployment/helm
 
+    - name: If nginx is enabled
+      if: ${{ inputs.nginx == 'true' }}
+      shell: bash
+      run: |
+        mv $GITHUB_ACTION_PATH/helm-charts/ingress-nginx $GITHUB_ACTION_PATH/operations/deployment/helm
+
     - name: Deploy with BitOps
       id: deploy
       uses: bitovi/github-actions-commons@main
