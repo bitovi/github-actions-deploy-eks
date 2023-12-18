@@ -191,7 +191,7 @@ runs:
         mv $GITHUB_ACTION_PATH/helm-charts/loki $GITHUB_ACTION_PATH/operations/deployment/helm
 
     - name: If nginx is enabled
-      if: ${{ inputs.nginx == 'true' }}
+      if: ${{ inputs.nginx-enable == 'true' }}
       shell: bash
       run: |
         mv $GITHUB_ACTION_PATH/helm-charts/ingress-nginx $GITHUB_ACTION_PATH/operations/deployment/helm
