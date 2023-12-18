@@ -185,7 +185,7 @@ runs:
         mv $GITHUB_ACTION_PATH/helm-charts/prometheus $GITHUB_ACTION_PATH/operations/deployment/helm
 
     - name: If loki is enabled
-      if: ${{ inputs.loki == 'true' }}
+      if: ${{ inputs.loki-enable == 'true' }}
       shell: bash
       run: |
         mv $GITHUB_ACTION_PATH/helm-charts/loki $GITHUB_ACTION_PATH/operations/deployment/helm
