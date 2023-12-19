@@ -153,11 +153,11 @@ inputs:
   aws_vpc_enable_nat_gateway:
     description: 'Enables NAT gateway'
     required: false
-    default: true
+    default: false
   aws_vpc_single_nat_gateway:
     description: 'Creates only one NAT gateway'
     required: false
-    default: true
+    default: false
   aws_vpc_external_nat_ip_ids:
     description: 'Comma separated list of IP IDS to reuse in the NAT gateways'
     required: false
