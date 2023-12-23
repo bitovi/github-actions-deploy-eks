@@ -1,6 +1,6 @@
 helm:
   cli:
-    namespace: monitoring
+    namespace: kube-system
     timeout: 200s
     debug: true
     atomic: false
