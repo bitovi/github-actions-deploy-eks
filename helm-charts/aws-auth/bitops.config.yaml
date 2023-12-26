@@ -4,7 +4,7 @@ helm:
     timeout: 200s
     debug: true
     atomic: false
-    force: false
+    force: true
     dry-run: false
   options:
     release-name: aws-auth

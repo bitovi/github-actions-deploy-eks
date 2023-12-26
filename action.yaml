@@ -9,6 +9,10 @@ inputs:
     description: 'Specifies if this action should checkout the code'
     required: false
     default: 'true'
+  aws-auth-enable:
+    description: 'Specifies it his action should force the aws-auth deployment on top of the default one.'
+    required: false
+    defatult: true
   prometheus-enable:
     description: 'Specifies if this action should checkout the code'
     required: false
@@ -173,6 +177,12 @@ inputs:
 runs:
   using: 'composite'
   steps:
+    - name: If aws-auth is enabled
+      if: ${{ inputs.aws-auth-enable == 'true' }}
+      shell: bash
+      run: |
+        mv $GITHUB_ACTION_PATH/helm-charts/aws-auth $GITHUB_ACTION_PATH/operations/deployment/helm
+
     - name: If grafana is enabled
       if: ${{ inputs.grafana-enable == 'true' }}
       shell: bash
