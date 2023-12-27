@@ -193,7 +193,7 @@ runs:
 
     - name: Deploy with BitOps
       id: deploy
-      uses: bitovi/github-actions-commons@eks-fixes-bitops-yaml
+      uses: bitovi/github-actions-commons@4d492a0fc1406d31e4be1e4334843b8ca19d7e3d
       with:
         bitops_code_only: ${{ inputs.bitops_code_only }}
         bitops_code_store: ${{ inputs.bitops_code_store }}
