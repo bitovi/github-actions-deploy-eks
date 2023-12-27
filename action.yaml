@@ -9,10 +9,6 @@ inputs:
     description: 'Specifies if this action should checkout the code'
     required: false
     default: 'true'
-  aws-auth-enable:
-    description: 'Specifies it his action should force the aws-auth deployment on top of the default one.'
-    required: false
-    defatult: true
   prometheus-enable:
     description: 'Specifies if this action should checkout the code'
     required: false
@@ -90,8 +86,14 @@ inputs:
   aws_eks_cluster_name:
     description: "EKS Cluster name. Defaults to eks-cluster"
     required: false
+  aws_eks_cluster_admin_role_arn:
+    description: "Role ARN to grant cluster-admin permissions"
+    required: false
   aws_eks_cluster_log_types:
     description: "EKS Log types, csv list"
+    required: false
+  aws_eks_cluster_log_retention_days:
+    description: "Days to store logs. Defaults to 7."
     required: false
   aws_eks_cluster_version:
     description: 'Specify the k8s cluster version'
@@ -241,7 +243,9 @@ runs:
         aws_eks_allowed_ports: ${{ inputs.aws_eks_allowed_ports }}
         aws_eks_allowed_ports_cidr: ${{ inputs.aws_eks_allowed_ports_cidr }}
         aws_eks_cluster_name: ${{ inputs.aws_eks_cluster_name }}
+        aws_eks_cluster_admin_role_arn: ${{ inputs.aws_eks_cluster_admin_role_arn }}
         aws_eks_cluster_log_types: ${{ inputs.aws_eks_cluster_log_types}}
+        aws_eks_cluster_log_retention_days: ${{ inputs.aws_eks_cluster_log_retention_days }}
         aws_eks_cluster_version: ${{ inputs.aws_eks_cluster_version }}
         aws_eks_instance_type: ${{ inputs.aws_eks_instance_type }}
         aws_eks_instance_ami_id: ${{ inputs.aws_eks_instance_ami_id }}
