@@ -95,6 +95,9 @@ inputs:
   aws_eks_cluster_log_retention_days:
     description: "Days to store logs. Defaults to 7."
     required: false
+  aws_eks_cluster_log_skip_destroy:
+    description: "Skip deletion of cluster logs if set to true"
+    required: false
   aws_eks_cluster_version:
     description: 'Specify the k8s cluster version'
     required: false 
@@ -179,12 +182,6 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - name: If aws-auth is enabled
-      if: ${{ inputs.aws-auth-enable == 'true' }}
-      shell: bash
-      run: |
-        mv $GITHUB_ACTION_PATH/helm-charts/aws-auth $GITHUB_ACTION_PATH/operations/deployment/helm
-
     - name: If grafana is enabled
       if: ${{ inputs.grafana-enable == 'true' }}
       shell: bash
@@ -211,7 +208,7 @@ runs:
 
     - name: Deploy with BitOps
       id: deploy
-      uses: bitovi/github-actions-commons@eks-fixes-bitops-yaml
+      uses: bitovi/github-actions-commons@main
       with:
         bitops_code_only: ${{ inputs.bitops_code_only }}
         bitops_code_store: ${{ inputs.bitops_code_store }}
@@ -246,6 +243,7 @@ runs:
         aws_eks_cluster_admin_role_arn: ${{ inputs.aws_eks_cluster_admin_role_arn }}
         aws_eks_cluster_log_types: ${{ inputs.aws_eks_cluster_log_types}}
         aws_eks_cluster_log_retention_days: ${{ inputs.aws_eks_cluster_log_retention_days }}
+        aws_eks_cluster_log_skip_destroy: ${{ inputs.aws_eks_cluster_log_skip_destroy }}
         aws_eks_cluster_version: ${{ inputs.aws_eks_cluster_version }}
         aws_eks_instance_type: ${{ inputs.aws_eks_instance_type }}
         aws_eks_instance_ami_id: ${{ inputs.aws_eks_instance_ami_id }}
