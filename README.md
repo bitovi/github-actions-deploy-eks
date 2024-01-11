@@ -28,9 +28,9 @@ jobs:
     - name: Create EKS Cluster
       uses: bitovi/github-actions-deploy-eks@v0.1.0
       with:
-        aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID_SANDBOX}}
-        aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY_SANDBOX}}
-        aws_default_region: us-east-1
+        aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws_eks_cluster_admin_role_arn: arn:aws:iam::123456789012:role/AWSReservedSSO_AdministratorAccess_1234567890123456
 ```
 
 ### Advanced example
@@ -48,9 +48,10 @@ jobs:
     - name: Create EKS Cluster
       uses: bitovi/github-actions-deploy-eks@v0.1.0
       with:
-        aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID_SANDBOX}}
-        aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY_SANDBOX}}
+        aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws_default_region: us-east-1
+        aws_eks_cluster_admin_role_arn: arn:aws:iam::123456789012:role/AWSReservedSSO_AdministratorAccess_1234567890123456
         
         # tf_stack_destroy: true
         tf_state_bucket_destroy: true 
