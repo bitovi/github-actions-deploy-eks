@@ -146,6 +146,8 @@ The following inputs can be used as `step.with` keys
 |------------------|---------|------------------------------------|
 | `prometheus_enable` | Boolean | Set to `true`to enable deployment through chart. |
 | `grafana_enable` | Boolean | Set to `true`to enable deployment through chart. |
+| `loki_enable` | Boolean | Set to `true` to enable deployment throught chart. |
+| `nginx_enable` | Boolean | Set to `true` to enable deployment throught chart. |
 | `input_helm_charts` | String | Relative path to the folder from project containing Helm charts to be installed. Could be uncompressed or compressed (.tgz) files. |
 <hr/>
 <br/>

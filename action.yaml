@@ -123,13 +123,17 @@ inputs:
 
   # EKS Extras
   prometheus_enable:
-    description: 'Specifies if this action should checkout the code'
+    description: 'Specifies if this action should checkout the code for this deployment'
     required: false
-    default: 'false'
   grafana_enable:
-    description: 'Specifies if this action should checkout the code'
+    description: 'Specifies if this action should checkout the code for this deployment'
     required: false
-    default: 'false'
+  loki_enable:
+    description: 'Specifies if this action should checkout the code for this deployment'
+    required: false
+  nginx_enable: 
+    description: 'Specifies if this action should checkout the code for this deployment'
+    required: false
   input_helm_charts: 
     description: 'Relative path to the folder from project containing Helm charts to be installed. Could be uncompressed or compressed (.tgz) files.'
     required: false
@@ -207,13 +211,13 @@ runs:
         mv $GITHUB_ACTION_PATH/helm-charts/prometheus $GITHUB_ACTION_PATH/operations/deployment/helm
 
     - name: If loki is enabled
-      if: ${{ inputs.loki-enable == 'true' }}
+      if: ${{ inputs.loki_enable == 'true' }}
       shell: bash
       run: |
         mv $GITHUB_ACTION_PATH/helm-charts/loki $GITHUB_ACTION_PATH/operations/deployment/helm
 
     - name: If nginx is enabled
-      if: ${{ inputs.nginx-enable == 'true' }}
+      if: ${{ inputs.nginx_enable == 'true' }}
       shell: bash
       run: |
         mv $GITHUB_ACTION_PATH/helm-charts/ingress-nginx $GITHUB_ACTION_PATH/operations/deployment/helm
