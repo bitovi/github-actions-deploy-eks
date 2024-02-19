@@ -1,7 +1,7 @@
 # Deploy Amazon EKS Cluster
 
 GitHub action to deploy an EKS cluster, defining VPC's, Secruity Groups, EC2 Instance templates and everything needed, taking minimum imputs from the user.
-Will generate a cluster of EC2 Instances running Amazon EKS Image, with version 1.27 as default.
+Will generate a cluster of EC2 Instances running Amazon EKS Image, with version 1.28 as default.
 
 ## Requirements
 
@@ -58,7 +58,7 @@ jobs:
   
         aws_eks_environment: qa
         aws_eks_stackname: qa-stack
-        aws_eks_cluster_version: 1.25
+        aws_eks_cluster_version: 1.29
         aws_eks_instance_type: t2.small
 
         aws_eks_max_size: 5
