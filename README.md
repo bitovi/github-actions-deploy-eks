@@ -26,7 +26,7 @@ jobs:
 
     steps:
     - name: Create EKS Cluster
-      uses: bitovi/github-actions-deploy-eks@v0.1.1
+      uses: bitovi/github-actions-deploy-eks@v0.1.0
       with:
         aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -46,7 +46,7 @@ jobs:
 
     steps:
     - name: Create EKS Cluster
-      uses: bitovi/github-actions-deploy-eks@v0.1.1
+      uses: bitovi/github-actions-deploy-eks@v0.1.0
       with:
         aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -146,8 +146,8 @@ The following inputs can be used as `step.with` keys
 |------------------|---------|------------------------------------|
 | `prometheus_enable` | Boolean | Set to `true`to enable deployment through chart. |
 | `grafana_enable` | Boolean | Set to `true`to enable deployment through chart. |
-| `loki_enable` | Boolean | Set to `true` to enable deployment throught chart. |
-| `nginx_enable` | Boolean | Set to `true` to enable deployment throught chart. |
+| `loki_enable` | Boolean | Set to `true` to enable deployment through chart. |
+| `nginx_enable` | Boolean | Set to `true` to enable deployment through chart. |
 | `input_helm_charts` | String | Relative path to the folder from project containing Helm charts to be installed. Could be uncompressed or compressed (.tgz) files. |
 <hr/>
 <br/>
