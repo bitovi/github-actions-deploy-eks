@@ -77,8 +77,11 @@ jobs:
 1. [Action Defaults](#action-defaults-inputs)
 1. [AWS](#aws-inputs)
 1. [EKS](#eks-inputs)
-1. [Extras](#eks-extras)
+1. [Extras](#eks-extras) ⚠️
 1. [VPC](#vpc-inputs)
+
+> ⚠️ Using any kind of **extras** can lead to the creation of load balancers. If doing so, manual intervention to delete them after will be needed.
+
 
 ### Outputs
 1. [Action Outputs](#action-outputs)
@@ -86,7 +89,6 @@ jobs:
 The following inputs can be used as `step.with` keys
 <br/>
 <br/>
-
 #### **Action defaults Inputs**
 | Name             | Type    | Description                        |
 |------------------|---------|------------------------------------|
