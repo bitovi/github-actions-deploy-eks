@@ -9,14 +9,6 @@ inputs:
     description: 'Specifies if this action should checkout the code'
     required: false
     default: 'true'
-  prometheus-enable:
-    description: 'Specifies if this action should checkout the code'
-    required: false
-    default: 'false'
-  grafana-enable:
-    description: 'Specifies if this action should checkout the code'
-    required: false
-    default: 'false'
   bitops_code_only:
     description: 'Will run only the generation phase of BitOps, where the Terraform and Ansible code is built.'
     required: false
@@ -90,7 +82,7 @@ inputs:
     description: "Role ARN to grant cluster-admin permissions"
     required: false
   aws_eks_cluster_log_types:
-    description: "EKS Log types, csv list"
+    description: "EKS Log types, comma separated list. Defaults to api,audit,authenticator"
     required: false
   aws_eks_cluster_log_retention_days:
     description: "Days to store logs. Defaults to 7."
@@ -127,6 +119,19 @@ inputs:
     required: false
   aws_eks_additional_tags:
     description: 'A JSON object of additional tags that will be included on created resources. Example: `{"key1": "value1", "key2": "value2"}`'
+    required: false
+
+  # EKS Extras
+  prometheus_enable:
+    description: 'Specifies if this action should checkout the code'
+    required: false
+    default: 'false'
+  grafana_enable:
+    description: 'Specifies if this action should checkout the code'
+    required: false
+    default: 'false'
+  input_helm_charts: 
+    description: 'Relative path to the folder from project containing Helm charts to be installed. Could be uncompressed or compressed (.tgz) files.'
     required: false
 
   # AWS VPC Inputs
@@ -174,22 +179,29 @@ inputs:
     description: 'A JSON object of additional tags that will be included on created resources. Example: `{"key1": "value1", "key2": "value2"}`'
     required: false
 
-  # Helm input
-  input_helm_charts: 
-    description: 'Relative path to the folder from project containing Helm charts to be installed. Could be uncompressed or compressed (.tgz) files.'
-    required: false
+outputs:
+  # VPC
+  aws_vpc_id:
+    description: "The selected VPC ID used."
+    value: ${{ steps.deploy.outputs.aws_vpc_id }}
+  eks_cluster_name:
+    description: "EKS Cluster name"  
+    value: ${{ steps.deploy.outputs.eks_cluster_name }}
+  eks_cluster_role_arn:
+    description: "EKS Role ARN"
+    value: ${{ steps.deploy.outputs.eks_cluster_role_arn }}
 
 runs:
   using: 'composite'
   steps:
     - name: If grafana is enabled
-      if: ${{ inputs.grafana-enable == 'true' }}
+      if: ${{ inputs.grafana_enable == 'true' }}
       shell: bash
       run: |
         mv $GITHUB_ACTION_PATH/helm-charts/grafana $GITHUB_ACTION_PATH/operations/deployment/helm
 
     - name: If prometheus is enabled
-      if: ${{ inputs.prometheus-enable == 'true' }}
+      if: ${{ inputs.prometheus_enable == 'true' }}
       shell: bash
       run: |
         mv $GITHUB_ACTION_PATH/helm-charts/prometheus $GITHUB_ACTION_PATH/operations/deployment/helm
@@ -208,7 +220,7 @@ runs:
 
     - name: Deploy with BitOps
       id: deploy
-      uses: bitovi/github-actions-commons@main
+      uses: bitovi/github-actions-commons@v0.0.13
       with:
         bitops_code_only: ${{ inputs.bitops_code_only }}
         bitops_code_store: ${{ inputs.bitops_code_store }}

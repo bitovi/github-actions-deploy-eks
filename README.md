@@ -26,7 +26,7 @@ jobs:
 
     steps:
     - name: Create EKS Cluster
-      uses: bitovi/github-actions-deploy-eks@v0.1.0
+      uses: bitovi/github-actions-deploy-eks@v0.1.1
       with:
         aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -46,7 +46,7 @@ jobs:
 
     steps:
     - name: Create EKS Cluster
-      uses: bitovi/github-actions-deploy-eks@v0.1.0
+      uses: bitovi/github-actions-deploy-eks@v0.1.1
       with:
         aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -77,7 +77,11 @@ jobs:
 1. [Action Defaults](#action-defaults-inputs)
 1. [AWS](#aws-inputs)
 1. [EKS](#eks-inputs)
+1. [Extras](#eks-extras)
 1. [VPC](#vpc-inputs)
+
+### Outputs
+1. [Action Outputs](#action-outputs)
 
 The following inputs can be used as `step.with` keys
 <br/>
@@ -134,6 +138,14 @@ The following inputs can be used as `step.with` keys
 | `aws_eks_max_size` | String | Enter the max_size for the worker nodes. Defaults to `4`. |
 | `aws_eks_min_size` | String | Enter the min_size for the worker nodes. Defaults to `2`. |
 | `aws_eks_additional_tags` | JSON | Add additional tags to the terraform [default tags](https://www.hashicorp.com/blog/default-tags-in-the-terraform-aws-provider), any tags put here will be added to eks provisioned resources.|
+<hr/>
+<br/>
+
+#### **EKS Extras**
+| Name             | Type    | Description                        |
+|------------------|---------|------------------------------------|
+| `prometheus_enable` | Boolean | Set to `true`to enable deployment through chart. |
+| `grafana_enable` | Boolean | Set to `true`to enable deployment through chart. |
 | `input_helm_charts` | String | Relative path to the folder from project containing Helm charts to be installed. Could be uncompressed or compressed (.tgz) files. |
 <hr/>
 <br/>
@@ -150,9 +162,20 @@ The following inputs can be used as `step.with` keys
 | `aws_vpc_id` | String | **Existing** AWS VPC ID to use. Accepts `vpc-###` values. |
 | `aws_vpc_subnet_id` | String | **Existing** AWS VPC Subnet ID. If none provided, will pick one. (Ideal when there's only one). |
 | `aws_vpc_enable_nat_gateway` | String | Adds a NAT gateway for each public subnet. Defaults to `true`. |
-| `aws_vpc_single_nat_gateway` | String | Toggles only one NAT gateway for all of the public subnets. Defaults to `false`. |
+| `aws_vpc_single_nat_gateway` | String | Toggles only one NAT gateway for all of the public subnets. Defaults to `true`. |
 | `aws_vpc_external_nat_ip_ids` | String | **Existing** comma separated list of IP IDs if reusing. (ElasticIPs). |
 | `aws_vpc_additional_tags` | JSON | Add additional tags to the terraform [default tags](https://www.hashicorp.com/blog/default-tags-in-the-terraform-aws-provider), any tags put here will be added to vpc provisioned resources.|
+<hr/>
+<br/>
+
+#### **Action Outputs**
+| Name             | Description                        |
+|------------------|------------------------------------|
+| `aws_vpc_id` | The selected VPC ID used. |
+| `ecs_load_balancer_dns` | ECS ALB DNS Record. |
+| `ecs_dns_record` | ECS DNS URL. |
+| `ecs_sg_id` | ECS SG ID. |
+| `ecs_lb_sg_id` | ECS LB SG ID. |
 <hr/>
 <br/>
 
@@ -164,6 +187,11 @@ We limit this to a 60 characters string because some AWS resources have a length
 We use the kubernetes style for this. For example, kubernetes -> k(# of characters)s -> k8s. And so you might see some compressions are made.
 
 For some specific resources, we have a 32 characters limit. If the identifier length exceeds this number after compression, we remove the middle part and replace it for a hash made up from the string itself. 
+
+## Note about tagging
+
+There's the option to add any kind of defined tag's to each grouping module. Will be added to the commons tagging.
+An example of how to set them: `{"key1": "value1", "key2": "value2"}`'
 
 ### S3 buckets naming
 
@@ -179,8 +207,14 @@ As a default, if not setting any instance ami_id, we will take care of setting u
 [BitOps](https://bitops.sh) allows you to define Infrastructure-as-Code for multiple tools in a central place.  This action uses a BitOps [Operations Repository](https://bitops.sh/operations-repo-structure/) to set up the necessary Terraform and Ansible to create infrastructure and deploy to it.
 
 ## Contributing
-We would love for you to contribute to [bitovi/github-actions-deploy-docker-to-ec2](https://github.com/bitovi/github-actions-deploy-docker-to-ec2).
-Would you like to see additional features?  [Create an issue](https://github.com/bitovi/github-actions-deploy-docker-to-ec2/issues/new) or a [Pull Requests](https://github.com/bitovi/github-actions-deploy-docker-to-ec2/pulls). We love discussing solutions!
+We would love for you to contribute to [bitovi/github-actions-deploy-docker-to-ec2](https://github.com/bitovi/github-actions-deploy-eks).
+Would you like to see additional features?  [Create an issue](https://github.com/bitovi/github-actions-deploy-eks/issues/new) or a [Pull Requests](https://github.com/bitovi/github-actions-deploy-eks/pulls). We love discussing solutions!
 
 ## License
-The scripts and documentation in this project are released under the [MIT License](https://github.com/bitovi/github-actions-deploy-docker-to-ec2/blob/main/LICENSE).
+The scripts and documentation in this project are released under the [MIT License](https://github.com/bitovi/github-actions-deploy-eks/blob/main/LICENSE).
+
+# Provided by Bitovi
+[Bitovi](https://www.bitovi.com/) is a proud supporter of Open Source software.
+
+# We want to hear from you.
+Come chat with us about open source in our Bitovi community [Discord](https://discord.gg/zAHn4JBVcX)!
