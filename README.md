@@ -183,6 +183,10 @@ The following inputs can be used as `step.with` keys
 <hr/>
 <br/>
 
+
+## Helm charts
+We have aws-auth,ingress, grafana, prometheus and loki as helm charts which can be called by deployment repo to install in aws eks cluster. User can pass input like "grafana_enable", "loki_enable", "nginx_enable", "prometheus_enable" in deployment repo along with aws access information and these charts would be installed along with eks creation in aws.
+
 ## Note about resource identifiers
 
 Most resources will contain the tag `${GITHUB_ORG_NAME}-${GITHUB_REPO_NAME}-${GITHUB_BRANCH_NAME}`, some of them, even the resource name after. 
