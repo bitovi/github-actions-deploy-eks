@@ -1,0 +1,14 @@
+helm:
+  cli:
+    namespace: kube-system
+    timeout: 200s
+    debug: true
+    atomic: false
+    force: false
+    dry-run: false
+  options:
+    release-name: prometheus
+    skip-deploy: false
+    k8s:
+      fetch:
+        kubeconfig: true

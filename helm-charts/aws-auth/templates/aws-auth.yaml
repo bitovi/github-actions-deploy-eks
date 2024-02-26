@@ -1,0 +1,27 @@
+{{- if .Values.configmap.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.configmap.name }}
+  labels:
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    meta.helm.sh/release-name: aws-auth
+    meta.helm.sh/release-namespace: kube-system
+data:
+{{- if .Values.data.mapAccounts }}
+  mapAccounts: |
+    {{ .Values.data.mapAccounts| nindent 4 | trim }}
+{{- end }} 
+
+{{- if .Values.data.mapRoles }}
+  mapRoles: |
+    {{ .Values.data.mapRoles| nindent 4 | trim }}
+{{- end }} 
+
+{{- if .Values.data.mapUsers }}
+  mapUsers: |
+    {{ .Values.data.mapUsers| nindent 4 | trim }}
+{{- end }} 
+
+{{- end }}

@@ -1,7 +1,7 @@
 # Deploy Amazon EKS Cluster
 
-GitHub action to deploy an EKS cluster, defining VPC's, Secruity Groups, EC2 Instance templates and everything needed, taking minimum imputs from the user.
-Will generate a cluster of EC2 Instances running Amazon EKS Image, with version 1.27 as default.
+GitHub action to deploy an EKS cluster, defining VPC's, Security Groups, EC2 Instance templates and everything needed, taking minimum imputs from the user.
+Will generate a cluster of EC2 Instances running Amazon EKS Image, with version 1.28 as default.
 
 ## Requirements
 
@@ -28,9 +28,10 @@ jobs:
     - name: Create EKS Cluster
       uses: bitovi/github-actions-deploy-eks@v0.1.0
       with:
-        aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID_SANDBOX}}
-        aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY_SANDBOX}}
-        aws_default_region: us-east-1
+        aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws_eks_cluster_admin_role_arn: arn:aws:iam::123456789012:role/AWSReservedSSO_AdministratorAccess_1234567890123456
+        aws_additional_tags: {"key1": "value1", "key2": "value2"}
 ```
 
 ### Advanced example
@@ -48,16 +49,17 @@ jobs:
     - name: Create EKS Cluster
       uses: bitovi/github-actions-deploy-eks@v0.1.0
       with:
-        aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID_SANDBOX}}
-        aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY_SANDBOX}}
+        aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws_default_region: us-east-1
+        aws_eks_cluster_admin_role_arn: arn:aws:iam::123456789012:role/AWSReservedSSO_AdministratorAccess_1234567890123456
         
         # tf_stack_destroy: true
         tf_state_bucket_destroy: true 
   
         aws_eks_environment: qa
         aws_eks_stackname: qa-stack
-        aws_eks_cluster_version: 1.25
+        aws_eks_cluster_version: 1.29
         aws_eks_instance_type: t2.small
 
         aws_eks_max_size: 5
@@ -76,12 +78,18 @@ jobs:
 1. [Action Defaults](#action-defaults-inputs)
 1. [AWS](#aws-inputs)
 1. [EKS](#eks-inputs)
+1. [Extras](#eks-extras) ⚠️
 1. [VPC](#vpc-inputs)
+
+> ⚠️ Using any kind of **extras** can lead to the creation of load balancers. If doing so, manual intervention to delete them after will be needed. (You'll need to delete a load balancer and the VPC manually, then run the job )
+
+
+### Outputs
+1. [Action Outputs](#action-outputs)
 
 The following inputs can be used as `step.with` keys
 <br/>
 <br/>
-
 #### **Action defaults Inputs**
 | Name             | Type    | Description                        |
 |------------------|---------|------------------------------------|
@@ -112,15 +120,18 @@ The following inputs can be used as `step.with` keys
 | Name             | Type    | Description                        |
 |------------------|---------|------------------------------------|
 | `aws_eks_create` | Boolean | Define if an EKS cluster should be created. Defaults to `true`. |
-f| `aws_eks_security_group_name_master` | String | Define the security group name master. Defaults to `SG for ${var.aws_resource_identifier} - EKS Master`. |
-| `aws_eks_security_group_name_worker` | String | Define the security group name worker. Defaults to `SG for ${var.aws_resource_identifier} - EKS Worker`. |
+| `aws_eks_security_group_name_cluster` | String | Define the security group name master. Defaults to `SG for ${var.aws_resource_identifier} - EKS Cluster`. |
+| `aws_eks_security_group_name_node` | String | Define the security group name worker. Defaults to `SG for ${var.aws_resource_identifier} - EKS Node`. |
 | `aws_eks_environment` | String | Specify the eks environment name. Defaults to `env` |
 | `aws_eks_management_cidr` | String | Comma separated list of remote public CIDRs blocks to add it to Worker nodes security groups. |
 | `aws_eks_allowed_ports` | String | Allow incoming traffic from this port. Accepts comma separated values, matching 1 to 1 with `aws_eks_allowed_ports_cidr`. |
 | `aws_eks_allowed_ports_cidr` | String | Allow incoming traffic from this CIDR block. Accepts comma separated values, matching 1 to 1 with `aws_eks_allowed_ports`. If none defined, will allow all incoming traffic. |
 | `aws_eks_cluster_name` | String | Specify the k8s cluster name. Defaults to `${var.aws_resource_identifier}-cluster` |
-| `aws_eks_cluster_log_types` | String | Comma separated list of cluster log type. See [this AWS doc](https://docs.aws.amazon.com/eks/latest/userguide/control-plane-logs.html). Defaults to `none`. |
-| `aws_eks_cluster_version` | String | Specify the k8s cluster version. Defaults to `1.27` |
+| `aws_eks_cluster_admin_role_arn` | String | Role ARN to grant cluster-admin permissions. | 
+| `aws_eks_cluster_log_types` | String | Comma separated list of cluster log type. See [this AWS doc](https://docs.aws.amazon.com/eks/latest/userguide/control-plane-logs.html). Defaults to `api,audit,authenticator`. |
+| `aws_eks_cluster_log_retention_days` | String | Days to store logs. Defaults to `7`. | 
+| `aws_eks_cluster_logs_skip_destroy` | Boolean | Skip deletion of cluster logs if set to true. Defaults to `false`. |
+| `aws_eks_cluster_version` | String | Specify the k8s cluster version. Defaults to `1.28` |
 | `aws_eks_instance_type` | String | Define the EC2 instance type. See [this list](https://aws.amazon.com/ec2/instance-types/) for reference. Defaults to `t3a.medium`. |
 | `aws_eks_instance_ami_id` | String | AWS AMI ID. Will default to the latest Amazon EKS Node image for the cluster version. |
 | `aws_eks_instance_user_data_file` | String | Relative path in the repo for a user provided script to be executed with the EC2 Instance creation. See note. |
@@ -130,6 +141,16 @@ f| `aws_eks_security_group_name_master` | String | Define the security group nam
 | `aws_eks_max_size` | String | Enter the max_size for the worker nodes. Defaults to `4`. |
 | `aws_eks_min_size` | String | Enter the min_size for the worker nodes. Defaults to `2`. |
 | `aws_eks_additional_tags` | JSON | Add additional tags to the terraform [default tags](https://www.hashicorp.com/blog/default-tags-in-the-terraform-aws-provider), any tags put here will be added to eks provisioned resources.|
+<hr/>
+<br/>
+
+#### **EKS Extras**
+| Name             | Type    | Description                        |
+|------------------|---------|------------------------------------|
+| `prometheus_enable` | Boolean | Set to `true`to enable deployment through chart. |
+| `grafana_enable` | Boolean | Set to `true`to enable deployment through chart. |
+| `loki_enable` | Boolean | Set to `true` to enable deployment through chart. |
+| `nginx_enable` | Boolean | Set to `true` to enable deployment through chart. |
 | `input_helm_charts` | String | Relative path to the folder from project containing Helm charts to be installed. Could be uncompressed or compressed (.tgz) files. |
 <hr/>
 <br/>
@@ -146,11 +167,26 @@ f| `aws_eks_security_group_name_master` | String | Define the security group nam
 | `aws_vpc_id` | String | **Existing** AWS VPC ID to use. Accepts `vpc-###` values. |
 | `aws_vpc_subnet_id` | String | **Existing** AWS VPC Subnet ID. If none provided, will pick one. (Ideal when there's only one). |
 | `aws_vpc_enable_nat_gateway` | String | Adds a NAT gateway for each public subnet. Defaults to `true`. |
-| `aws_vpc_single_nat_gateway` | String | Toggles only one NAT gateway for all of the public subnets. Defaults to `false`. |
+| `aws_vpc_single_nat_gateway` | String | Toggles only one NAT gateway for all of the public subnets. Defaults to `true`. |
 | `aws_vpc_external_nat_ip_ids` | String | **Existing** comma separated list of IP IDs if reusing. (ElasticIPs). |
 | `aws_vpc_additional_tags` | JSON | Add additional tags to the terraform [default tags](https://www.hashicorp.com/blog/default-tags-in-the-terraform-aws-provider), any tags put here will be added to vpc provisioned resources.|
 <hr/>
 <br/>
+
+#### **Action Outputs**
+| Name             | Description                        |
+|------------------|------------------------------------|
+| `aws_vpc_id` | The selected VPC ID used. |
+| `ecs_load_balancer_dns` | ECS ALB DNS Record. |
+| `ecs_dns_record` | ECS DNS URL. |
+| `ecs_sg_id` | ECS SG ID. |
+| `ecs_lb_sg_id` | ECS LB SG ID. |
+<hr/>
+<br/>
+
+
+## Helm charts
+We have **aws-auth**,**ingress**, **grafana**, **prometheus** and **loki** as helm charts which can be called by deployment repo to install in the aws eks cluster. User can pass inputs like `grafana_enable`, `loki_enable`, `nginx_enable` and/or `prometheus_enable` in the deployment repo along with aws access information, and these charts would be installed along with eks creation in aws.
 
 ## Note about resource identifiers
 
@@ -161,9 +197,15 @@ We use the kubernetes style for this. For example, kubernetes -> k(# of characte
 
 For some specific resources, we have a 32 characters limit. If the identifier length exceeds this number after compression, we remove the middle part and replace it for a hash made up from the string itself. 
 
+## Note about tagging
+
+There's the option to add any kind of defined tags to each grouping module. Will be added to the commons tagging.
+See first example for the correct formatting.
+
 ### S3 buckets naming
 
-Buckets names can be made of up to 63 characters. If the length allows us to add -tf-state, we will do so. If not, a simple -tf will be added.
+Buckets names can be up to 63 characters. If the length allows, -tf-state will be suffixed to the name. Otherwise, only -tf will be added.
+In all cases, the name hashing described above will be used to keep the lengths within limit.
 
 ## EC2 User data
 
@@ -175,8 +217,14 @@ As a default, if not setting any instance ami_id, we will take care of setting u
 [BitOps](https://bitops.sh) allows you to define Infrastructure-as-Code for multiple tools in a central place.  This action uses a BitOps [Operations Repository](https://bitops.sh/operations-repo-structure/) to set up the necessary Terraform and Ansible to create infrastructure and deploy to it.
 
 ## Contributing
-We would love for you to contribute to [bitovi/github-actions-deploy-docker-to-ec2](https://github.com/bitovi/github-actions-deploy-docker-to-ec2).
-Would you like to see additional features?  [Create an issue](https://github.com/bitovi/github-actions-deploy-docker-to-ec2/issues/new) or a [Pull Requests](https://github.com/bitovi/github-actions-deploy-docker-to-ec2/pulls). We love discussing solutions!
+We would love for you to contribute to [bitovi/github-actions-deploy-docker-to-ec2](https://github.com/bitovi/github-actions-deploy-eks).
+Would you like to see additional features?  [Create an issue](https://github.com/bitovi/github-actions-deploy-eks/issues/new) or a [Pull Requests](https://github.com/bitovi/github-actions-deploy-eks/pulls). We love discussing solutions!
 
 ## License
-The scripts and documentation in this project are released under the [MIT License](https://github.com/bitovi/github-actions-deploy-docker-to-ec2/blob/main/LICENSE).
+The scripts and documentation in this project are released under the [MIT License](https://github.com/bitovi/github-actions-deploy-eks/blob/main/LICENSE).
+
+# Provided by Bitovi
+[Bitovi](https://www.bitovi.com/) is a proud supporter of Open Source software.
+
+# We want to hear from you.
+Come chat with us about open source in our Bitovi community [Discord](https://discord.gg/zAHn4JBVcX)!
