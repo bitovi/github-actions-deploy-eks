@@ -199,7 +199,7 @@ For some specific resources, we have a 32 characters limit. If the identifier le
 ## Note about tagging
 
 There's the option to add any kind of defined tags to each grouping module. Will be added to the commons tagging.
-An example of how to set the input value : `aws_additional_tags = {"key1": "value1", "key2": "value2"}`'
+For example, adding global tags wold look like this: `aws_additional_tags = {"key1": "value1", "key2": "value2"}`
 
 ### S3 buckets naming
 
