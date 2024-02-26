@@ -31,6 +31,7 @@ jobs:
         aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws_eks_cluster_admin_role_arn: arn:aws:iam::123456789012:role/AWSReservedSSO_AdministratorAccess_1234567890123456
+        aws_additional_tags: {"key1": "value1", "key2": "value2"}
 ```
 
 ### Advanced example
@@ -199,7 +200,7 @@ For some specific resources, we have a 32 characters limit. If the identifier le
 ## Note about tagging
 
 There's the option to add any kind of defined tags to each grouping module. Will be added to the commons tagging.
-For example, adding global tags wold look like this: `aws_additional_tags = {"key1": "value1", "key2": "value2"}`
+See first example for the correct formatting.
 
 ### S3 buckets naming
 
