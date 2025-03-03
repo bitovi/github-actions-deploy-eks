@@ -224,7 +224,8 @@ runs:
 
     - name: Deploy with BitOps
       id: deploy
-      uses: bitovi/github-actions-commons@v1
+      # uses: bitovi/github-actions-commons@v1
+      uses: bitovi/github-actions-commons@more-helm-values-files
       with:
         bitops_code_only: ${{ inputs.bitops_code_only }}
         bitops_code_store: ${{ inputs.bitops_code_store }}
