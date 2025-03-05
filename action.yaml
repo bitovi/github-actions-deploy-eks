@@ -226,6 +226,7 @@ runs:
       id: deploy
       uses: bitovi/github-actions-commons@v1
       with:
+        checkout: ${{ inputs.checkout }}
         bitops_code_only: ${{ inputs.bitops_code_only }}
         bitops_code_store: ${{ inputs.bitops_code_store }}
         tf_stack_destroy: ${{ inputs.tf_stack_destroy }}
