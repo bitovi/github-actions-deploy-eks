@@ -92,12 +92,15 @@ inputs:
     required: false
   aws_eks_cluster_version:
     description: 'Specify the k8s cluster version'
-    required: false 
+    required: true 
   aws_eks_instance_type:
     description: 'enter the aws instance type'
     required: false 
   aws_eks_instance_ami_id:
     description: 'AWS AMI ID. Will default to the latest Amazon EKS Node image for the cluster version.'
+    required: false
+  aws_eks_instance_ami_type:
+    description: 'Type of AMI to use. Defaults to AL2_x86_64'
     required: false
   aws_eks_instance_user_data_file:
     description: 'Relative path in the repo for a user provided script to be executed with Terraform EKS Node creation.'
@@ -224,7 +227,7 @@ runs:
 
     - name: Deploy with BitOps
       id: deploy
-      uses: bitovi/github-actions-commons@v1
+      uses: bitovi/github-actions-commons@updating_eks_default_version
       with:
         checkout: ${{ inputs.checkout }}
         bitops_code_only: ${{ inputs.bitops_code_only }}
@@ -264,6 +267,7 @@ runs:
         aws_eks_cluster_version: ${{ inputs.aws_eks_cluster_version }}
         aws_eks_instance_type: ${{ inputs.aws_eks_instance_type }}
         aws_eks_instance_ami_id: ${{ inputs.aws_eks_instance_ami_id }}
+        aws_eks:instance_ami_type: ${{ inputs.aws_eks_instance_ami_type }}
         aws_eks_instance_user_data_file: ${{ inputs.aws_eks_instance_user_data_file}}
         aws_eks_ec2_key_pair: ${{ inputs.aws_eks_ec2_key_pair }}
         aws_eks_store_keypair_sm: ${{ inputs.aws_eks_store_keypair_sm }}
