@@ -267,7 +267,7 @@ runs:
         aws_eks_cluster_version: ${{ inputs.aws_eks_cluster_version }}
         aws_eks_instance_type: ${{ inputs.aws_eks_instance_type }}
         aws_eks_instance_ami_id: ${{ inputs.aws_eks_instance_ami_id }}
-        aws_eks:instance_ami_type: ${{ inputs.aws_eks_instance_ami_type }}
+        aws_eks_instance_ami_type: ${{ inputs.aws_eks_instance_ami_type }}
         aws_eks_instance_user_data_file: ${{ inputs.aws_eks_instance_user_data_file}}
         aws_eks_ec2_key_pair: ${{ inputs.aws_eks_ec2_key_pair }}
         aws_eks_store_keypair_sm: ${{ inputs.aws_eks_store_keypair_sm }}
