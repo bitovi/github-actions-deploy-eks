@@ -90,16 +90,19 @@ inputs:
   aws_eks_cluster_log_skip_destroy:
     description: "Skip deletion of cluster logs if set to true"
     required: false
-  aws_eks_cluster_version:
-    description: 'Specify the k8s cluster version'
-    required: true 
+  aws_eks_create_bk_node_group:
+    description: 'Create a backup node group'
+    required: false
   aws_eks_instance_type:
     description: 'enter the aws instance type'
     required: false 
-  aws_eks_instance_ami_id:
-    description: 'AWS AMI ID. Will default to the latest Amazon EKS Node image for the cluster version.'
-    required: false
   aws_eks_instance_ami_type:
+    description: 'Type of AMI to use. Defaults to AL2_x86_64'
+    required: false
+  aws_eks_instance_type_bk:
+    description: 'enter the aws instance type'
+    required: false 
+  aws_eks_instance_ami_type_bk:
     description: 'Type of AMI to use. Defaults to AL2_x86_64'
     required: false
   aws_eks_instance_user_data_file:
@@ -265,9 +268,11 @@ runs:
         aws_eks_cluster_log_retention_days: ${{ inputs.aws_eks_cluster_log_retention_days }}
         aws_eks_cluster_log_skip_destroy: ${{ inputs.aws_eks_cluster_log_skip_destroy }}
         aws_eks_cluster_version: ${{ inputs.aws_eks_cluster_version }}
+        aws_eks_create_bk_node_group: ${{ inputs.aws_eks_create_bk_node_group }}
         aws_eks_instance_type: ${{ inputs.aws_eks_instance_type }}
-        aws_eks_instance_ami_id: ${{ inputs.aws_eks_instance_ami_id }}
         aws_eks_instance_ami_type: ${{ inputs.aws_eks_instance_ami_type }}
+        aws_eks_instance_type_bk: ${{ inputs.aws_eks_instance_type_bk }}
+        aws_eks_instance_ami_type_bk: ${{ inputs.aws_eks_instance_ami_type_bk }}
         aws_eks_instance_user_data_file: ${{ inputs.aws_eks_instance_user_data_file}}
         aws_eks_ec2_key_pair: ${{ inputs.aws_eks_ec2_key_pair }}
         aws_eks_store_keypair_sm: ${{ inputs.aws_eks_store_keypair_sm }}
