@@ -90,6 +90,9 @@ inputs:
   aws_eks_cluster_log_skip_destroy:
     description: "Skip deletion of cluster logs if set to true"
     required: false
+  aws_eks_cluster_version:
+    description: 'Specify the k8s cluster version'
+    required: true 
   aws_eks_create_bk_node_group:
     description: 'Create a backup node group'
     required: false
